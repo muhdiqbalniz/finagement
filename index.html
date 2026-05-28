@@ -13,7 +13,6 @@
             --color-needs: #007AFF;
             --color-wants: #FF9500;
             --color-savings: #34C759;
-            --color-deduction: #8E44AD;
             --color-alert: #FF3B30;
             --border-radius: 16px;
             --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -42,7 +41,6 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- Gateway Login & Sign Up System --- */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -53,7 +51,6 @@
             justify-content: center;
             padding: 20px;
             box-sizing: border-box;
-            overflow-y: auto;
         }
         .login-card {
             background: var(--bg-card);
@@ -66,7 +63,6 @@
             text-align: center;
         }
 
-        /* --- App Interface --- */
         #app-wrapper { display: none; }
 
         header {
@@ -152,10 +148,7 @@
         .card-alert-header { background-color: rgba(255, 59, 48, 0.1); border: 1px solid var(--color-alert); }
         .card-alert-header .card-title { color: var(--color-alert); }
 
-        .macro-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
-        @media(min-width: 350px) {
-            .macro-grid { grid-template-columns: repeat(4, 1fr); }
-        }
+        .macro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
         .macro-block { text-align: center; padding: 10px 4px; border-radius: 10px; background: rgba(0,0,0,0.02); }
         .macro-label { font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
         .macro-val { font-size: 12px; font-weight: 700; }
@@ -169,8 +162,12 @@
         .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
         .slider-meta-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
 
+        .payroll-item-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .payroll-item-row input[type="text"] { flex: 2; }
+        .payroll-item-row input[type="number"] { flex: 1; }
+
         input[type="number"], input[type="text"], input[type="password"], select, input[type="date"] {
-            width: 100%; padding: 14px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none;
+            width: 100%; padding: 12px; font-size: 15px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--input-bg); color: var(--text-main); box-sizing: border-box; outline: none;
         }
         input:focus, select:focus { border-color: var(--color-needs); }
 
@@ -178,12 +175,11 @@
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--color-needs); border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; }
 
         .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 14px; font-weight: 600; }
-        .checkbox-container input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
-        .btn { width: 100%; padding: 16px; font-size: 16px; font-weight: 700; border-radius: 12px; border: none; cursor: pointer; box-sizing: border-box; }
+        .btn { width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 12px; border: none; cursor: pointer; box-sizing: border-box; }
         .btn-primary { background-color: var(--color-needs); color: white; }
         .btn-action { background-color: var(--color-savings); color: white; }
-        .btn-minor { background: transparent; border: 1px solid var(--color-needs); color: var(--color-needs); padding: 8px 14px; font-size: 13px; font-weight: 700; border-radius: 20px; cursor: pointer; }
+        .btn-minor { background: transparent; border: 1px solid var(--color-needs); color: var(--color-needs); padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 20px; cursor: pointer; }
 
         .ledger-filter-select { padding: 6px 12px; font-size: 13px; font-weight: 600; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); width: auto; color: var(--text-main); }
 
@@ -207,7 +203,6 @@
         .btn-inline-pay { background: rgba(52, 199, 89, 0.1); color: var(--color-savings); border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
         .btn-inline-edit { background: rgba(0, 122, 255, 0.1); color: var(--color-needs); border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
         .btn-trash { background: transparent; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; padding: 4px 8px; }
-        .btn-trash:hover { color: var(--color-alert); }
 
         nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--bg-card); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); z-index: 100; }
         .nav-tab { display: flex; flex-direction: column; align-items: center; background: none; border: none; color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer; }
@@ -221,7 +216,6 @@
         .modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; }
         .close-trigger { font-size: 22px; cursor: pointer; color: var(--text-muted); }
 
-        /* Guide / Onboarding Tutorial Panels */
         .tutorial-box { background: rgba(0, 122, 255, 0.08); border-left: 4px solid var(--color-needs); padding: 14px; border-radius: 0 12px 12px 0; margin-bottom: 16px; }
         .tutorial-title { font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
 
@@ -232,18 +226,15 @@
         .c-needs { color: var(--color-needs); }
         .c-wants { color: var(--color-wants); }
         .c-savings { color: var(--color-savings); }
-        .c-deduction { color: var(--color-deduction); }
         .u-bold { font-weight: 700; }
     </style>
 </head>
 <body>
 
-<!-- GATEWAY REGISTRATION & LOGIN SYSTEM -->
 <div id="login-screen">
-    <!-- View 1: Auth Login Card -->
     <div class="login-card" id="card-auth-login">
         <h2 style="margin: 0 0 8px 0; font-weight: 800;">Finagement Secure</h2>
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Sign in to sync your engine data with Google Sheets.</p>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Sign in to sync your data with Google Sheets.</p>
         <div class="input-group" style="text-align: left;">
             <label>Username</label>
             <input type="text" id="login-user" placeholder="Enter Username">
@@ -259,27 +250,25 @@
         <div id="login-error" style="color: var(--color-alert); font-size: 13px; font-weight: bold; margin-top: 12px; display: none;"></div>
     </div>
 
-    <!-- View 2: Registration Card -->
     <div class="login-card" id="card-auth-signup" style="display: none;">
         <h2 style="margin: 0 0 8px 0; font-weight: 800;">Create Account</h2>
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Setup your pristine node ecosystem ledger link.</p>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Setup your new tracking ledger linked to cloud storage.</p>
         <div class="input-group" style="text-align: left;">
-            <label>Desired Username</label>
+            <label>Username</label>
             <input type="text" id="signup-user" placeholder="Create Username">
         </div>
         <div class="input-group" style="text-align: left; margin-bottom: 20px;">
-            <label>Secure Password</label>
+            <label>Password</label>
             <input type="password" id="signup-pass" placeholder="Create Password">
         </div>
         <button id="btn-signup" class="btn btn-action" onclick="executeCloudSignUp()">Register Secure Node</button>
         <p style="margin-top: 16px; font-size: 14px; font-weight: 600; color: var(--text-muted);">
-            Have an account? <span style="color: var(--color-needs); cursor: pointer;" onclick="toggleAuthForms(false)">Sign In Instead</span>
+            Have an account? <span style="color: var(--color-needs); cursor: pointer;" onclick="toggleAuthForms(false)">Sign In</span>
         </p>
         <div id="signup-error" style="color: var(--color-alert); font-size: 13px; font-weight: bold; margin-top: 12px; display: none;"></div>
     </div>
 </div>
 
-<!-- COMPARTMENTALIZED APP CONTENT -->
 <div id="app-wrapper">
     <header>
         <h1>Finagement</h1>
@@ -297,24 +286,20 @@
     <div id="sync-status">Ready</div>
 
     <div class="main-container">
-        <!-- FIRST TIME USER WALKTHROUGH TUTORIAL BANNER -->
+        <!-- ONBOARDING TUTORIAL -->
         <div id="new-user-walkthrough-panel" class="card" style="display: none; border-top: 4px solid var(--color-savings);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                 <h3 style="margin:0; font-size:16px; font-weight:800;">👋 Welcome to Finagement Pro!</h3>
                 <button class="btn-trash" style="padding:0; font-size:16px;" onclick="dismissOnboardingTutorial()">✕</button>
             </div>
-            <p style="font-size: 13px; margin: 0 0 12px 0; color: var(--text-muted);">Let's execute a quick operational overview of your ledger:</p>
+            <p style="font-size: 13px; margin: 0 0 12px 0; color: var(--text-muted);">Let's set up your ledger parameters in order:</p>
             <div class="tutorial-box">
-                <div class="tutorial-title">⚙️ Step 1: Configure Ratios</div>
-                <div style="font-size:12px; color:var(--text-muted);">Navigate to the <strong>Details</strong> tab below to enter your baseline <strong>Monthly Fixed Revenue</strong> and set target allocation boundaries.</div>
+                <div class="tutorial-title">💵 Step 1: Earning Page Configuration</div>
+                <div style="font-size:12px; color:var(--text-muted);">Go to the <strong>Earning</strong> tab. Input your base salary, add custom allowances or deductions (EPF, SOCSO) to automatically calculate your true <strong>Nett Pay</strong>, then dial in your distribution ratios.</div>
             </div>
             <div class="tutorial-box">
-                <div class="tutorial-title">📋 Step 2: Establish Budget Presets</div>
-                <div style="font-size:12px; color:var(--text-muted);">Build specific limits for Needs, Wants, Savings, or Employee Deductions under the details catalog form.</div>
-            </div>
-            <div class="tutorial-box" style="margin-bottom:0;">
-                <div class="tutorial-title">📝 Step 3: Log Daily Activity</div>
-                <div style="font-size:12px; color:var(--text-muted);">Return to this Overview monitor to post live real-time expenses via the <strong>Add Daily Expense</strong> engine block.</div>
+                <div class="tutorial-title">📦 Step 2: Establish Expense Targets</div>
+                <div style="font-size:12px; color:var(--text-muted);">Go to the <strong>Expenses</strong> tab to create structural spending thresholds mapped to Needs, Wants, or Savings limits.</div>
             </div>
         </div>
 
@@ -339,14 +324,10 @@
                         <div class="macro-label">Savings Cap</div>
                         <div class="macro-val" id="macro-savings">0.00</div>
                     </div>
-                    <div class="macro-block" style="border-top: 3px solid var(--color-deduction);">
-                        <div class="macro-label">Deduction</div>
-                        <div class="macro-val" id="macro-deduction">0.00</div>
-                    </div>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; border-top:1px dashed var(--border-color); padding-top:10px;">
-                    <span class="text-muted">Income Base: <span id="lbl-inc-base">0</span> RM</span>
-                    <span class="text-muted">Total Spent: <span id="lbl-spent-base">0</span> RM</span>
+                    <span class="text-muted">Calculated Nett Pay: <span id="lbl-inc-base">0</span> RM</span>
+                    <span class="text-muted">Total Out-of-Pocket: <span id="lbl-spent-base">0</span> RM</span>
                 </div>
             </div>
 
@@ -363,53 +344,73 @@
             </div>
         </div>
 
-        <!-- PAGE 2: DETAILS -->
-        <div id="page-details" class="app-view">
+        <!-- PAGE 2: EARNING PAGE (Calculates Nett Pay + Hosts Ratios) -->
+        <div id="page-earning" class="app-view">
             <div class="card">
-                <div class="card-title">Adjust Core Target Ratios</div>
+                <div class="card-title">Payroll Nett Pay Calculator</div>
                 <div class="input-group">
-                    <label>Monthly Fixed Revenue (RM)</label>
-                    <input type="number" id="cfg-income" placeholder="e.g. 4000" onchange="modifyBaseIncome(this.value)">
+                    <label>Base / Basic Salary (RM)</label>
+                    <input type="number" id="pay-basic-salary" placeholder="0.00" oninput="calculatePayrollNettOutput()">
                 </div>
-                <div class="input-group">
-                    <div class="slider-meta-row c-needs"><span>Needs Allocation:</span><span id="v-pct-needs">0% (0.00 RM)</span></div>
-                    <input type="range" id="sl-needs" min="0" max="100" value="0" oninput="balanceRatios('needs')">
+                
+                <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:13px; font-weight:700; color:var(--color-savings);">➕ Custom Allowances / Earnings</span>
+                    <button class="btn-minor" style="padding: 4px 10px;" onclick="addPayrollRow('allowance', '', 0)">+ Add Row</button>
                 </div>
-                <div class="input-group">
-                    <div class="slider-meta-row c-wants"><span>Wants Allocation:</span><span id="v-pct-wants">0% (0.00 RM)</span></div>
-                    <input type="range" id="sl-wants" min="0" max="100" value="0" oninput="balanceRatios('wants')">
+                <div id="allowances-container"></div>
+
+                <div style="margin-top:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:13px; font-weight:700; color:var(--color-alert);">➖ Pre-Take-Home Deductions (EPF, SOCSO, etc.)</span>
+                    <button class="btn-minor" style="padding: 4px 10px;" onclick="addPayrollRow('deduction', '', 0)">+ Add Row</button>
                 </div>
-                <div class="input-group">
-                    <div class="slider-meta-row c-savings"><span>Savings Allocation:</span><span id="v-pct-savings">0% (0.00 RM)</span></div>
-                    <input type="range" id="sl-savings" min="0" max="100" value="0" oninput="balanceRatios('savings')">
-                </div>
-                <div class="input-group">
-                    <div class="slider-meta-row c-deduction"><span>Employee Deduction Allocation:</span><span id="v-pct-deduction">0% (0.00 RM)</span></div>
-                    <input type="range" id="sl-deduction" min="0" max="100" value="0" oninput="balanceRatios('deduction')">
+                <div id="deductions-container"></div>
+
+                <div style="margin-top: 16px; padding-top:12px; border-top:2px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:16px; font-weight:800;">Derived Nett Take-Home:</span>
+                    <span style="font-size:20px; font-weight:800; color:var(--color-needs);" id="computed-nett-label">0.00 RM</span>
                 </div>
             </div>
 
             <div class="card">
+                <div class="card-title">Adjust Core Allocation Target Ratios</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:-8px; margin-bottom:16px;">Distribute your derived Nett Take-Home Pay across your framework buckets.</p>
+                <div class="input-group">
+                    <div class="slider-meta-row c-needs"><span>Needs Target Limit:</span><span id="v-pct-needs">0% (0.00 RM)</span></div>
+                    <input type="range" id="sl-needs" min="0" max="100" value="0" oninput="balanceRatios('needs')">
+                </div>
+                <div class="input-group">
+                    <div class="slider-meta-row c-wants"><span>Wants Target Limit:</span><span id="v-pct-wants">0% (0.00 RM)</span></div>
+                    <input type="range" id="sl-wants" min="0" max="100" value="0" oninput="balanceRatios('wants')">
+                </div>
+                <div class="input-group">
+                    <div class="slider-meta-row c-savings"><span>Savings Allocation Target:</span><span id="v-pct-savings">0% (0.00 RM)</span></div>
+                    <input type="range" id="sl-savings" min="0" max="100" value="0" oninput="balanceRatios('savings')">
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: EXPENSES (Item Budgets and Logs Ledger) -->
+        <div id="page-expenses" class="app-view">
+            <div class="card">
                 <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
-                    <span id="budget-form-heading">Create / Update Item Budgets</span>
+                    <span id="budget-form-heading">Create / Update Target Allocations</span>
                     <button class="btn-minor" onclick="triggerManualPreviousMonthCopy()">📋 Append Last Month</button>
                 </div>
                 <input type="hidden" id="cfg-editing-index" value="-1">
                 <div class="input-group">
-                    <label>Budget Allocation Group</label>
+                    <label>Structural Allocation Group</label>
                     <select id="cfg-item-group">
                         <option value="Needs" selected>Needs</option>
                         <option value="Wants">Wants</option>
                         <option value="Savings">Savings</option>
-                        <option value="Employee Deduction">Employee Deduction</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>Item Name</label>
-                    <input type="text" id="cfg-item-name" placeholder="e.g., EPF, Coffee, Petrol, Rent">
+                    <label>Item Track Label</label>
+                    <input type="text" id="cfg-item-name" placeholder="e.g., Petrol, Coffee, Rent, Investments">
                 </div>
                 <div class="input-group">
-                    <label>Allocated Monthly Cap Target Limit (RM)</label>
+                    <label>Target Allotted Monthly Cap (RM)</label>
                     <input type="number" id="cfg-item-cap" placeholder="500">
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -420,50 +421,49 @@
 
             <div class="card">
                 <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                    <span>Expense Details Ledger</span>
+                    <span>Framework Expense Ledger</span>
                     <select id="ledger-category-filter" class="ledger-filter-select" onchange="renderExpenseDetailsTable()">
-                        <option value="ALL">All Categories</option>
+                        <option value="ALL">All Framework Pools</option>
                         <option value="Needs">Needs</option>
                         <option value="Wants">Wants</option>
                         <option value="Savings">Savings</option>
-                        <option value="Employee Deduction">Employee Deduction</option>
                     </select>
                 </div>
                 <table class="expense-detail-table">
                     <thead>
-                        <tr><th>Item Name</th><th>Category</th><th class="align-right">Budget</th><th class="align-right">Actual</th><th class="align-right">Action</th></tr>
+                        <tr><th>Item Label</th><th>Group</th><th class="align-right">Budget</th><th class="align-right">Actual</th><th class="align-right">Action</th></tr>
                     </thead>
                     <tbody id="details-table-hook"></tbody>
                 </table>
             </div>
 
             <div class="card">
-                <div class="card-title">Yearly Performance Dashboard</div>
+                <div class="card-title">Yearly Performance Track</div>
                 <div id="annual-matrix-hook"></div>
             </div>
         </div>
 
-        <!-- PAGE 3: DEBT TRACKER -->
+        <!-- PAGE 4: DEBT TRACKER -->
         <div id="page-debts" class="app-view">
             <div class="card">
                 <div id="debt-form-heading" class="card-title">Create New Debt Facility</div>
                 <input type="hidden" id="debt-editing-index" value="-1">
                 <div class="input-group">
-                    <label>Debt Register Label Name</label>
-                    <input type="text" id="debt-reg-name" placeholder="e.g., Bike Loan">
+                    <label>Debt Label Name</label>
+                    <input type="text" id="debt-reg-name" placeholder="e.g., Housing Loan">
                 </div>
                 <div class="input-group">
-                    <label>Initial Total Debt Principal (RM)</label>
+                    <label>Total Principal Outstandings (RM)</label>
                     <input type="number" id="debt-reg-total" placeholder="15000">
                 </div>
                 <div class="input-group">
-                    <label>Monthly Installment Target</label>
+                    <label>Monthly Target Repayment Value</label>
                     <input type="number" id="debt-reg-installment" placeholder="450">
                 </div>
                 <div class="input-group" id="debt-connect-toggle-row">
                     <div class="checkbox-container">
                         <input type="checkbox" id="debt-connect-budget" checked>
-                        <label for="debt-connect-budget">Automatically create a tracking item under Needs</label>
+                        <label for="debt-connect-budget">Auto-populate a tracker baseline under Needs</label>
                     </div>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -474,7 +474,7 @@
 
             <div class="card">
                 <div class="card-title" style="display:flex; justify-content:space-between;">
-                    <span>Active Debts Balance Ledger</span>
+                    <span>Active Debt Balances Ledger</span>
                     <span id="debt-aggregate-summary" class="u-bold alert-text-color">0.00 RM</span>
                 </div>
                 <div id="debt-list-hook"></div>
@@ -485,11 +485,12 @@
 
 <nav>
     <button class="nav-tab active" onclick="navigatePage('overview', this)"><span class="nav-icon">📱</span><span>Overview</span></button>
-    <button class="nav-tab" onclick="navigatePage('details', this)"><span class="nav-icon">⚙️</span><span>Details</span></button>
-    <button class="nav-tab" onclick="navigatePage('debts', this)"><span class="nav-icon">💳</span><span>Debts Tracker</span></button>
+    <button class="nav-tab" onclick="navigatePage('earning', this)"><span class="nav-icon">💵</span><span>Earning</span></button>
+    <button class="nav-tab" onclick="navigatePage('expenses', this)"><span class="nav-icon">⚙️</span><span>Expenses</span></button>
+    <button class="nav-tab" onclick="navigatePage('debts', this)"><span class="nav-icon">💳</span><span>Debts</span></button>
 </nav>
 
-<!-- EXPENSE MODAL -->
+<!-- MODALS -->
 <div id="expense-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -497,13 +498,12 @@
             <span class="close-trigger" onclick="toggleModal('expense-modal', false)">&times;</span>
         </div>
         <div class="input-group"><label>Transaction Date</label><input type="date" id="log-date-field"></div>
-        <div class="input-group"><label>Pre-set Tracked Item Categorization Link</label><select id="log-preset-selector"></select></div>
+        <div class="input-group"><label>Framework Item Allocation Target</label><select id="log-preset-selector"></select></div>
         <div class="input-group"><label>Amount Disbursed (RM)</label><input type="number" id="log-amount-field" placeholder="0.00" step="0.01"></div>
         <button class="btn btn-primary" onclick="submitDailyExpenseEntry()">Log Transaction Entry</button>
     </div>
 </div>
 
-<!-- REPAYMENT MODAL -->
 <div id="debt-repay-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -516,24 +516,23 @@
     </div>
 </div>
 
-<!-- USER PROFILE UTILITY POPUP MODAL -->
 <div id="profile-modal" class="modal">
-    <div class="modal-content" style="border-radius: 20px 20px 20px 20px; max-width: 320px; margin: auto; margin-bottom: auto; top: 15%;">
+    <div class="modal-content" style="border-radius: 20px; max-width: 320px; margin: auto; margin-bottom: auto; top: 15%;">
         <div class="modal-header">
             <h3>Account Settings</h3>
             <span class="close-trigger" onclick="toggleModal('profile-modal', false)">&times;</span>
         </div>
-        <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600;">Active Session: <span id="profile-username-lbl" style="color:var(--color-needs)">-</span></p>
-        <button class="btn id="theme-toggle-btn" style="background: var(--bg-primary); color: var(--text-main); margin-bottom: 12px; border: 1px solid var(--border-color);" onclick="executeThemeSwitchToggle()">🌗 Toggle Dark / Light Mode</button>
+        <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600;">Active User Instance: <span id="profile-username-lbl" style="color:var(--color-needs)">-</span></p>
+        <button class="btn" style="background: var(--bg-primary); color: var(--text-main); margin-bottom: 12px; border: 1px solid var(--border-color);" onclick="executeThemeSwitchToggle()">🌗 Toggle Appearance Vibe</button>
         <button class="btn" style="background: var(--color-alert); color: white;" onclick="executeApplicationLogout()">🚪 Log Out Session</button>
     </div>
 </div>
 
 <script>
+    // PASTE YOUR SHEET URL LINK MATRIX HERE
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycby9KGTCcnCQM4LN-R4uAAYWcWcA05fggTm5DVhfoAH9jvn39ZVHFygmfFfPIqgDbgKvog/exec";
 
     let activeUserCreds = { username: "", password: "" };
-
     const dateEngine = new Date();
     const activeYear = dateEngine.getFullYear();
     const activeMonthNum = dateEngine.getMonth() + 1; 
@@ -549,7 +548,6 @@
         document.getElementById('signup-error').style.display = 'none';
     }
 
-    // Sign up mechanism targeting backend sheet array
     async function executeCloudSignUp() {
         const userField = document.getElementById('signup-user').value.trim();
         const passField = document.getElementById('signup-pass').value;
@@ -557,7 +555,7 @@
         const signupBtn = document.getElementById('btn-signup');
 
         if(!userField || !passField) {
-            errElement.textContent = "Please fulfill all parameter entry requirements.";
+            errElement.textContent = "Please fill in all parameter entry inputs.";
             errElement.style.display = "block";
             return;
         }
@@ -566,12 +564,7 @@
         signupBtn.textContent = "Deploying Matrix Node...";
         errElement.style.display = "none";
 
-        // Generate pristine empty initialization baseline object
-        const baseFreshPayload = {
-            months: {},
-            debts: [],
-            hasSeenTutorial: false
-        };
+        const baseFreshPayload = { months: {}, debts: [], hasSeenTutorial: false };
 
         try {
             const response = await fetch(CLOUD_API_URL, {
@@ -584,20 +577,17 @@
                     payload: JSON.stringify(baseFreshPayload)
                 })
             });
-
             const result = await response.json();
-
             if(result.success) {
-                alert("Account node created successfully! Directing to authentication console.");
+                alert("Account node created successfully! Directing to validation terminal.");
                 toggleAuthForms(false);
                 document.getElementById('login-user').value = userField;
             } else {
-                errElement.textContent = result.message || "Registration collision error.";
+                errElement.textContent = result.message || "Registration conflict.";
                 errElement.style.display = "block";
             }
         } catch (err) {
-            console.error(err);
-            errElement.textContent = "Network transaction failed. Verify deployment setup configuration rules.";
+            errElement.textContent = "Network error occurred.";
             errElement.style.display = "block";
         } finally {
             signupBtn.disabled = false;
@@ -605,7 +595,6 @@
         }
     }
 
-    // Safe multi-tenant user login pipeline
     async function executeCloudLogin() {
         const userField = document.getElementById('login-user').value.trim();
         const passField = document.getElementById('login-pass').value;
@@ -613,25 +602,20 @@
         const loginBtn = document.getElementById('btn-login');
 
         if(!userField || !passField) {
-            showLoginError("Please enter your database credentials.");
+            showLoginError("Enter authentication credentials.");
             return;
         }
 
         loginBtn.disabled = true;
-        loginBtn.textContent = "Authenticating Node Cloud...";
+        loginBtn.textContent = "Authenticating Base Node...";
         errElement.style.display = "none";
 
         try {
             const response = await fetch(CLOUD_API_URL, {
                 method: "POST",
                 mode: "cors",
-                body: JSON.stringify({
-                    action: "login",
-                    username: userField,
-                    password: passField
-                })
+                body: JSON.stringify({ action: "login", username: userField, password: passField })
             });
-
             const result = await response.json();
 
             if(result.success) {
@@ -647,14 +631,12 @@
 
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('app-wrapper').style.display = "block";
-                
                 bootStateEngine();
             } else {
-                showLoginError(result.message || "Invalid credentials.");
+                showLoginError(result.message || "Invalid account matching profiles.");
             }
         } catch (err) {
-            console.error(err);
-            showLoginError("Cloud connection matrix structural error.");
+            showLoginError("Cloud connection sequence failure loop.");
         } finally {
             loginBtn.disabled = false;
             loginBtn.textContent = "Unlock Account";
@@ -663,17 +645,12 @@
 
     function showLoginError(msg) {
         const el = document.getElementById('login-error');
-        el.textContent = msg;
-        el.style.display = "block";
+        el.textContent = msg; el.style.display = "block";
     }
 
     function executeApplicationLogout() {
         activeUserCreds = { username: "", password: "" };
         localEngine = { months: {}, debts: [], hasSeenTutorial: false };
-        document.getElementById('login-user').value = "";
-        document.getElementById('login-pass').value = "";
-        document.getElementById('signup-user').value = "";
-        document.getElementById('signup-pass').value = "";
         toggleModal('profile-modal', false);
         document.getElementById('app-wrapper').style.display = "none";
         document.getElementById('login-screen').style.display = "flex";
@@ -681,13 +658,12 @@
 
     function executeThemeSwitchToggle() {
         const cur = document.documentElement.getAttribute('data-theme');
-        const target = (cur === 'dark') ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', target);
+        document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
     }
 
     async function triggerCloudSync() {
         const statusEl = document.getElementById('sync-status');
-        statusEl.textContent = "🔄 Synchronizing ledger data to cloud sheets...";
+        statusEl.textContent = "🔄 Synchronizing ledger to sheet array...";
         statusEl.style.color = "var(--color-wants)";
 
         try {
@@ -703,31 +679,31 @@
             });
             const result = await response.json();
             if(result.success) {
-                statusEl.textContent = "✅ Database cloud sync fully verified!";
+                statusEl.textContent = "✅ Database cloud synchronization completely secure.";
                 statusEl.style.color = "var(--color-savings)";
             } else {
-                statusEl.textContent = "❌ Sync failed: " + result.message;
+                statusEl.textContent = "❌ Sync mismatch: " + result.message;
                 statusEl.style.color = "var(--color-alert)";
             }
         } catch (e) {
-            statusEl.textContent = "❌ Network synchronization structural interruption.";
+            statusEl.textContent = "❌ Structural connection disruption.";
             statusEl.style.color = "var(--color-alert)";
         }
     }
 
-    // Pristine non-populated initialization loop for fresh users
     function initSpecificMonthSchema(key) {
         if (!localEngine.months[key]) {
             localEngine.months[key] = {
-                income: 0, // Fresh clean initialization
-                percentages: { needs: 0, wants: 0, savings: 0, deduction: 0 },
-                budgets: [], // Pure blank state architecture
+                income: 0,
+                payroll: { basic: 0, allowances: [], deductions: [] }, // Clean multi-tenant initialization parameters
+                percentages: { needs: 0, wants: 0, savings: 0 },
+                budgets: [],
                 expenses: []
             };
         }
-        // Backward-compatible verification logic just in case structural fields are undefined
-        if(!localEngine.months[key].percentages.deduction) {
-            localEngine.months[key].percentages.deduction = 0;
+        // Upgrade verification script check for backward parsing compatibility rules
+        if(!localEngine.months[key].payroll) {
+            localEngine.months[key].payroll = { basic: localEngine.months[key].income || 0, allowances: [], deductions: [] };
         }
     }
 
@@ -737,8 +713,7 @@
         monthsArray.forEach(m => {
             const keyStr = `${m} ${activeYear}`;
             initSpecificMonthSchema(keyStr); 
-            let option = document.createElement('option');
-            option.value = keyStr; option.textContent = keyStr;
+            let option = document.createElement('option'); option.value = keyStr; option.textContent = keyStr;
             if(keyStr === currentMonthKey) option.selected = true;
             dropdown.appendChild(option);
         });
@@ -746,28 +721,83 @@
 
     function executeMonthNavigationShift() {
         currentMonthKey = document.getElementById('month-navigation-dropdown').value;
-        const activeState = localEngine.months[currentMonthKey];
+        const state = localEngine.months[currentMonthKey];
         
-        document.getElementById('cfg-income').value = activeState.income || "";
-        document.getElementById('sl-needs').value = activeState.percentages.needs || 0;
-        document.getElementById('sl-wants').value = activeState.percentages.wants || 0;
-        document.getElementById('sl-savings').value = activeState.percentages.savings || 0;
-        document.getElementById('sl-deduction').value = activeState.percentages.deduction || 0;
+        document.getElementById('pay-basic-salary').value = state.payroll.basic || "";
+        document.getElementById('sl-needs').value = state.percentages.needs || 0;
+        document.getElementById('sl-wants').value = state.percentages.wants || 0;
+        document.getElementById('sl-savings').value = state.percentages.savings || 0;
         
+        // Render dynamic allowances and deduction dynamic container matrices
+        document.getElementById('allowances-container').innerHTML = '';
+        state.payroll.allowances.forEach(a => addPayrollRow('allowance', a.name, a.value));
+        
+        document.getElementById('deductions-container').innerHTML = '';
+        state.payroll.deductions.forEach(d => addPayrollRow('deduction', d.name, d.value));
+
+        calculatePayrollNettOutput(false); // Evaluate data calculations silently without resetting modifications
         clearBudgetForm(); clearDebtForm(); updateSliderLabels();
         renderDashboardView(); renderExpenseDetailsTable(); renderAnnualPerformanceGrid();
+    }
+
+    function addPayrollRow(type, initialName = '', initialVal = 0) {
+        const container = document.getElementById(type === 'allowance' ? 'allowances-container' : 'deductions-container');
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'payroll-item-row';
+        rowDiv.innerHTML = `
+            <input type="text" placeholder="${type === 'allowance' ? 'Allowance Label' : 'Deduction Label'}" value="${initialName}" oninput="syncPayrollStateData()">
+            <input type="number" placeholder="RM" value="${initialVal || ''}" oninput="syncPayrollStateData()">
+            <button class="btn-trash" style="padding:4px;" onclick="this.parentElement.remove(); syncPayrollStateData();">✕</button>
+        `;
+        container.appendChild(rowDiv);
+    }
+
+    function syncPayrollStateData() {
+        calculatePayrollNettOutput(true);
+    }
+
+    function calculatePayrollNettOutput(shouldSaveToDatabase = true) {
+        const state = localEngine.months[currentMonthKey];
+        const basicSalary = parseFloat(document.getElementById('pay-basic-salary').value) || 0;
+        state.payroll.basic = basicSalary;
+
+        let totalAllowances = 0;
+        state.payroll.allowances = [];
+        document.querySelectorAll('#allowances-container .payroll-item-row').forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const name = inputs[0].value.trim();
+            const val = parseFloat(inputs[1].value) || 0;
+            if(name || val) {
+                state.payroll.allowances.push({ name, value: val });
+                totalAllowances += val;
+            }
+        });
+
+        let totalDeductions = 0;
+        state.payroll.deductions = [];
+        document.querySelectorAll('#deductions-container .payroll-item-row').forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const name = inputs[0].value.trim();
+            const val = parseFloat(inputs[1].value) || 0;
+            if(name || val) {
+                state.payroll.deductions.push({ name, value: val });
+                totalDeductions += val;
+            }
+        });
+
+        const derivedNettPay = (basicSalary + totalAllowances) - totalDeductions;
+        state.income = derivedNettPay; // Derived take-home overrides income calculation variables cleanly
+
+        document.getElementById('computed-nett-label').textContent = derivedNettPay.toLocaleString('en-US', {minimumFractionDigits:2}) + ' RM';
+        
+        updateSliderLabels();
+        if(shouldSaveToDatabase) commitDatabase();
     }
 
     function bootStateEngine() {
         buildGlobalMonthNavigationDropdown();
         executeMonthNavigationShift();
-
-        // Evaluate onboarding conditional check
-        if(localEngine.hasSeenTutorial !== true) {
-            document.getElementById('new-user-walkthrough-panel').style.display = "block";
-        } else {
-            document.getElementById('new-user-walkthrough-panel').style.display = "none";
-        }
+        document.getElementById('new-user-walkthrough-panel').style.display = localEngine.hasSeenTutorial !== true ? "block" : "none";
     }
 
     function dismissOnboardingTutorial() {
@@ -776,9 +806,7 @@
         commitDatabase();
     }
 
-    function commitDatabase() {
-        triggerCloudSync();
-    }
+    function commitDatabase() { triggerCloudSync(); }
 
     function navigatePage(targetId, navButton) {
         document.querySelectorAll('.app-view').forEach(p => p.classList.remove('active'));
@@ -786,7 +814,8 @@
         document.getElementById('page-' + targetId).classList.add('active');
         navButton.classList.add('active');
         if (targetId === 'overview') renderDashboardView();
-        if (targetId === 'details') { renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); updateSliderLabels(); }
+        if (targetId === 'expenses') { renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); }
+        if (targetId === 'earning') updateSliderLabels();
         if (targetId === 'debts') renderDebtTrackerLedger();
     }
 
@@ -807,12 +836,8 @@
         const currentBudgets = localEngine.months[currentMonthKey].budgets;
         
         if(currentBudgets.length === 0) {
-            let opt = document.createElement('option');
-            opt.textContent = "No preset budget items found! Add some in Details.";
-            selector.appendChild(opt);
-            return;
+            selector.innerHTML = '<option>No preset target configurations found!</option>'; return;
         }
-
         currentBudgets.forEach(b => {
             let opt = document.createElement('option'); opt.value = b.name; opt.textContent = `[${b.group}] - ${b.name}`; selector.appendChild(opt);
         });
@@ -839,13 +864,12 @@
         let remainingBalance = state.income - totalDisbursed;
         
         document.getElementById('main-real-balance').textContent = remainingBalance.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' RM';
-        document.getElementById('lbl-inc-base').textContent = state.income.toLocaleString();
+        document.getElementById('lbl-inc-base').textContent = state.income.toLocaleString('en-US', {minimumFractionDigits: 2});
         document.getElementById('lbl-spent-base').textContent = totalDisbursed.toLocaleString('en-US', {minimumFractionDigits: 2});
         
         document.getElementById('macro-needs').textContent = (state.income * (state.percentages.needs / 100)).toFixed(0) + ' RM';
         document.getElementById('macro-wants').textContent = (state.income * (state.percentages.wants / 100)).toFixed(0) + ' RM';
         document.getElementById('macro-savings').textContent = (state.income * (state.percentages.savings / 100)).toFixed(0) + ' RM';
-        document.getElementById('macro-deduction').textContent = (state.income * (state.percentages.deduction / 100)).toFixed(0) + ' RM';
 
         const alertCardElement = document.getElementById('alert-warning-card');
         const alertItemsHook = document.getElementById('alert-items-hook');
@@ -877,9 +901,9 @@
         const date = document.getElementById('log-date-field').value;
         const itemName = document.getElementById('log-preset-selector').value;
         const costValue = parseFloat(document.getElementById('log-amount-field').value);
-        if (!date || !itemName || isNaN(costValue) || costValue <= 0) return alert("Verify core tracking fields.");
+        if (!date || !itemName || isNaN(costValue) || costValue <= 0) return alert("Verify logging requirements.");
         const targetPreset = localEngine.months[currentMonthKey].budgets.find(b => b.name === itemName);
-        if(!targetPreset) return alert("Please map entry to valid catalog baseline preset.");
+        if(!targetPreset) return alert("Verify allocation item matching maps.");
         localEngine.months[currentMonthKey].expenses.push({ id: Date.now(), date, item: itemName, group: targetPreset.group, cost: costValue });
         commitDatabase(); renderDashboardView(); toggleModal('expense-modal', false); document.getElementById('log-amount-field').value = '';
     }
@@ -891,58 +915,39 @@
         const pctNeeds = parseInt(document.getElementById('sl-needs').value) || 0;
         const pctWants = parseInt(document.getElementById('sl-wants').value) || 0;
         const pctSavings = parseInt(document.getElementById('sl-savings').value) || 0;
-        const pctDeduction = parseInt(document.getElementById('sl-deduction').value) || 0;
 
         document.getElementById('v-pct-needs').textContent = `${pctNeeds}% (${(incomeBase * (pctNeeds / 100)).toFixed(2)} RM)`;
         document.getElementById('v-pct-wants').textContent = `${pctWants}% (${(incomeBase * (pctWants / 100)).toFixed(2)} RM)`;
         document.getElementById('v-pct-savings').textContent = `${pctSavings}% (${(incomeBase * (pctSavings / 100)).toFixed(2)} RM)`;
-        document.getElementById('v-pct-deduction').textContent = `${pctDeduction}% (${(incomeBase * (pctDeduction / 100)).toFixed(2)} RM)`;
     }
 
     function balanceRatios(shiftedFactor) {
         let n = parseInt(document.getElementById('sl-needs').value) || 0;
         let w = parseInt(document.getElementById('sl-wants').value) || 0;
         let s = parseInt(document.getElementById('sl-savings').value) || 0;
-        let d = parseInt(document.getElementById('sl-deduction').value) || 0;
         
-        let total = n + w + s + d;
-        let diff = 100 - total;
-
+        let total = n + w + s; let diff = 100 - total;
         if (diff !== 0) {
-            // Allocate difference dynamically across the other active controls
-            let targets = ['needs', 'wants', 'savings', 'deduction'].filter(t => t !== shiftedFactor);
-            let targetElements = {
-                needs: document.getElementById('sl-needs'),
-                wants: document.getElementById('sl-wants'),
-                savings: document.getElementById('sl-savings'),
-                deduction: document.getElementById('sl-deduction')
-            };
-
+            let targets = ['needs', 'wants', 'savings'].filter(t => t !== shiftedFactor);
+            let targetElements = { needs: document.getElementById('sl-needs'), wants: document.getElementById('sl-wants'), savings: document.getElementById('sl-savings') };
             let share = Math.round(diff / targets.length);
             targets.forEach((t, idx) => {
-                let el = targetElements[t];
-                let val = parseInt(el.value) || 0;
+                let el = targetElements[t]; let val = parseInt(el.value) || 0;
                 if (idx === targets.length - 1) {
                     el.value = Math.max(0, 100 - (parseInt(targetElements[shiftedFactor].value) + targets.slice(0, -1).reduce((acc, curr) => acc + parseInt(targetElements[curr].value), 0)));
-                } else {
-                    el.value = Math.max(0, val + share);
-                }
+                } else { el.value = Math.max(0, val + share); }
             });
         }
-        
         updateSliderLabels();
         localEngine.months[currentMonthKey].percentages.needs = parseInt(document.getElementById('sl-needs').value);
         localEngine.months[currentMonthKey].percentages.wants = parseInt(document.getElementById('sl-wants').value);
         localEngine.months[currentMonthKey].percentages.savings = parseInt(document.getElementById('sl-savings').value);
-        localEngine.months[currentMonthKey].percentages.deduction = parseInt(document.getElementById('sl-deduction').value);
         commitDatabase();
     }
 
-    function modifyBaseIncome(numericVal) { localEngine.months[currentMonthKey].income = parseFloat(numericVal) || 0; commitDatabase(); updateSliderLabels(); }
-
     function commitCustomBudgetItem() {
         const group = document.getElementById('cfg-item-group').value; const name = document.getElementById('cfg-item-name').value.trim(); const cap = parseFloat(document.getElementById('cfg-item-cap').value); const idx = parseInt(document.getElementById('cfg-editing-index').value);
-        if(!name || isNaN(cap) || cap <= 0) return alert("Verify catalog validation rules.");
+        if(!name || isNaN(cap) || cap <= 0) return alert("Verify target parameters validation constraints rules.");
         let col = localEngine.months[currentMonthKey].budgets;
         if (idx >= 0) {
             const histName = col[idx].name;
@@ -960,15 +965,15 @@
         document.getElementById('budget-form-heading').textContent = "✏️ Editing: " + target.name; document.getElementById('btn-cancel-budget-edit').style.display = "block"; document.getElementById('cfg-item-name').focus();
     }
 
-    function clearBudgetForm() { document.getElementById('cfg-editing-index').value = "-1"; document.getElementById('cfg-item-name').value = ""; document.getElementById('cfg-item-cap').value = ""; document.getElementById('budget-form-heading').textContent = "Create / Update Item Budgets"; document.getElementById('btn-cancel-budget-edit').style.display = "none"; }
+    function clearBudgetForm() { document.getElementById('cfg-editing-index').value = "-1"; document.getElementById('cfg-item-name').value = ""; document.getElementById('cfg-item-cap').value = ""; document.getElementById('budget-form-heading').textContent = "Create / Update Target Allocations"; document.getElementById('btn-cancel-budget-edit').style.display = "none"; }
 
     function triggerManualPreviousMonthCopy() {
-        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); if(currentMonthIdx <= 0) return alert("No history found.");
+        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); if(currentMonthIdx <= 0) return alert("No history structure discovered.");
         const targetKey = `${monthsArray[currentMonthIdx - 1]} ${activeYear}`; const source = localEngine.months[targetKey];
-        if(!source || !source.budgets || source.budgets.length === 0) return alert(`No tracking details found for ${targetKey}`);
+        if(!source || !source.budgets || source.budgets.length === 0) return alert(`No history records found for ${targetKey}`);
         let col = localEngine.months[currentMonthKey].budgets; let added = 0;
         source.budgets.forEach(oldItem => { if (!col.some(curr => curr.name.toLowerCase() === oldItem.name.toLowerCase())) { col.push(JSON.parse(JSON.stringify(oldItem))); added++; } });
-        commitDatabase(); renderExpenseDetailsTable(); alert(`Appended ${added} budget items from ${targetKey}!`);
+        commitDatabase(); renderExpenseDetailsTable(); alert(`Appended ${added} entries tracking items from ${targetKey}!`);
     }
 
     function renderExpenseDetailsTable() {
@@ -976,7 +981,7 @@
         const state = localEngine.months[currentMonthKey]; const filter = document.getElementById('ledger-category-filter').value;
         let itemSpent = {}; state.expenses.forEach(e => { itemSpent[e.item] = (itemSpent[e.item] || 0) + e.cost; });
         let filtered = filter !== 'ALL' ? state.budgets.filter(b => b.group === filter) : state.budgets;
-        if(filtered.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No entries match conditions.</td></tr>`; return; }
+        if(filtered.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No custom allocation metrics found.</td></tr>`; return; }
         filtered.forEach((b) => {
             const trueIdx = state.budgets.findIndex(orig => orig.name === b.name); const actual = itemSpent[b.name] || 0;
             let tableRow = document.createElement('tr'); if (actual > b.cap) tableRow.className = 'alert-text-color';
@@ -985,7 +990,7 @@
         });
     }
 
-    function purgeBudgetItemPreset(index) { if(confirm("Erase this item target rule limit?")) { localEngine.months[currentMonthKey].budgets.splice(index, 1); commitDatabase(); renderExpenseDetailsTable(); } }
+    function purgeBudgetItemPreset(index) { if(confirm("Erase this configuration target parameters rule limits?")) { localEngine.months[currentMonthKey].budgets.splice(index, 1); commitDatabase(); renderExpenseDetailsTable(); } }
 
     function renderAnnualPerformanceGrid() {
         const hook = document.getElementById('annual-matrix-hook'); hook.innerHTML = '';
@@ -998,7 +1003,7 @@
 
     function commitDebtRegistry() {
         const label = document.getElementById('debt-reg-name').value.trim(); const principal = parseFloat(document.getElementById('debt-reg-total').value); const targetInst = parseFloat(document.getElementById('debt-reg-installment').value) || 0; const connect = document.getElementById('debt-connect-budget').checked; const idx = parseInt(document.getElementById('debt-editing-index').value);
-        if (!label || isNaN(principal) || principal <= 0) return alert("Verify ledger constraints parameters.");
+        if (!label || isNaN(principal) || principal <= 0) return alert("Verify liability constraints parameters mappings.");
         if (idx >= 0) {
             let oldName = localEngine.debts[idx].name; localEngine.debts[idx] = { name: label, total: principal, paid: localEngine.debts[idx].paid, targetInstallment: targetInst, connectToBudget: connect };
             if (oldName.toLowerCase() !== label.toLowerCase()) { Object.keys(localEngine.months).forEach(mKey => { localEngine.months[mKey].budgets.forEach(b => { if (b.name.toLowerCase() === oldName.toLowerCase()) b.name = label; }); localEngine.months[mKey].expenses.forEach(e => { if (e.item.toLowerCase() === oldName.toLowerCase()) e.item = label; }); }); }
@@ -1020,7 +1025,7 @@
 
     function renderDebtTrackerLedger() {
         recalculateDebtPaymentsFromLogFeeds(); const listHook = document.getElementById('debt-list-hook'); listHook.innerHTML = ''; let sum = 0; let db = localEngine.debts || [];
-        if(db.length === 0) { listHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No recorded active liabilities.</div>'; document.getElementById('debt-aggregate-summary').textContent = '0.00 RM'; return; }
+        if(db.length === 0) { listHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No recorded active balances liability constraints tracks.</div>'; document.getElementById('debt-aggregate-summary').textContent = '0.00 RM'; return; }
         db.forEach((d, index) => {
             let owed = d.total - d.paid; sum += owed; let row = document.createElement('div'); row.className = 'ledger-row';
             row.innerHTML = `<div class="ledger-main"><span class="ledger-title">${d.name} <small style="color:var(--text-muted); font-weight:normal;">${d.connectToBudget !== false ? '(Linked)' : '(Isolated)'}</small></span><span class="ledger-subtitle">Paid: ${d.paid.toFixed(2)} / ${d.total.toFixed(2)} RM</span></div><div class="ledger-right"><span class="ledger-value alert-text-color">${owed.toLocaleString('en-US', {minimumFractionDigits: 2})} RM</span><button class="btn-inline-pay" onclick="triggerInlineRepaymentSheet(${index})">Pay</button><button class="btn-inline-edit" onclick="loadDebtEditPreset(${index})">Edit</button><button class="btn-trash" onclick="purgeDebtProfileLine(${index})">✕</button></div>`;
@@ -1032,12 +1037,12 @@
     function triggerInlineRepaymentSheet(index) { document.getElementById('repay-target-index').value = index; toggleModal('debt-repay-modal', true); }
     function submitDebtRepayment() {
         const idx = parseInt(document.getElementById('repay-target-index').value); const val = parseFloat(document.getElementById('repay-amount-field').value);
-        if(isNaN(val) || val <= 0) return alert("Verify numerical entries.");
+        if(isNaN(val) || val <= 0) return alert("Verify target parameters input values configuration matrix inputs.");
         let d = localEngine.debts[idx]; localEngine.months[currentMonthKey].expenses.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], item: d.name, group: "Needs", cost: val });
         commitDatabase(); renderDebtTrackerLedger(); toggleModal('debt-repay-modal', false); document.getElementById('repay-amount-field').value = '';
     }
 
-    function purgeDebtProfileLine(index) { if (confirm("Remove this liability layout entry entirely?")) { localEngine.debts.splice(index, 1); commitDatabase(); renderDebtTrackerLedger(); } }
+    function purgeDebtProfileLine(index) { if (confirm("Remove this configuration entirely?")) { localEngine.debts.splice(index, 1); commitDatabase(); renderDebtTrackerLedger(); } }
 </script>
 
 </body>
