@@ -411,8 +411,7 @@
 </div>
 
 <script>
-    // ⚠️ CRITICAL: REPLACE WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
-    const CLOUD_API_URL = https://script.google.com/macros/s/AKfycbxiu_jqWNcXzEGTaEkcQrNxv-UOfSOYpnpt6_G-jJ8WK2-PZQkYAtRtlIjKHNDzMiqFCg/exec;
+    const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbxLzlc1kU31PRl47eyY3x6uqj2myQiTn52Z9_UCpUwUzpaCeMIkH4HG5P3keIOgOcZtdw/exec";
 
     let activeUserCreds = { username: "", password: "" };
 
@@ -422,10 +421,9 @@
     const monthsArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let currentMonthKey = `${monthsArray[activeMonthNum - 1]} ${activeYear}`;
 
-    // Standard fallback object blueprint structure ruleset configurations
     let localEngine = { months: {}, debts: [] };
 
-    // Handle initial authentication checks
+    // 1. Handle user authentication safely
     async function executeCloudLogin() {
         const userField = document.getElementById('login-user').value.trim();
         const passField = document.getElementById('login-pass').value;
@@ -464,16 +462,18 @@
                     localEngine = { months: {}, debts: [] };
                 }
 
+                // Hide login, show app safely
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('app-wrapper').style.display = "block";
                 
+                // Now build the application layout
                 bootStateEngine();
             } else {
-                showLoginError(result.message || "Authentication failed.");
+                showLoginError(result.message || "Invalid credentials.");
             }
         } catch (err) {
             console.error(err);
-            showLoginError("Cloud error connection failed. Check Web App URL deployment rules.");
+            showLoginError("Cloud error connection failed. Check your network or Apps Script deployment rules.");
         } finally {
             loginBtn.disabled = false;
             loginBtn.textContent = "Unlock Account";
@@ -568,7 +568,7 @@
     }
 
     function commitDatabase() {
-        triggerCloudSync(); // Updates the cloud automatically whenever a structural change happens locally
+        triggerCloudSync();
     }
 
     function navigatePage(targetId, navButton) {
