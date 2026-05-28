@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Finagement</title>
+    <style>
+        :root {
+            --bg-primary: #F2F4F7;
+            --bg-card: #FFFFFF;
+            --text-main: #1D2129;
+            --text-muted: #656E7B;
+            --color-needs: #007AFF;
+            --color-wants: #FF9500;
+            --color-savings: #34C759;
+            --color-alert: #FF3B30;
+            --border-radius: 16px;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Header Styling --- */
+        header {
+            background-color: var(--bg-card);
+            padding: 16px;
+            border-bottom: 1px solid #E5E9F0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        
+        .month-selector-wrapper {
+            background: #EAF2FF;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        .month-dropdown {
+            background: transparent;
+            border: none;
+            color: var(--color-needs);
+            font-weight: 700;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* --- View Ports & Layout --- */
+        .main-container {
+            flex-grow: 1;
+            padding: 16px;
+            padding-bottom: 90px;
+            box-sizing: border-box;
+        }
+
+        .app-view { display: none; }
+        .app-view.active { display: block; }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #E5E9F0;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        .card-alert-header {
+            background-color: #FFF0F0;
+            border: 1px solid #FFD1D1;
+        }
+        .card-alert-header .card-title {
+            color: var(--color-alert);
+        }
+
+        /* --- Macro Financial Targets Grid --- */
+        .macro-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .macro-block {
+            text-align: center;
+            padding: 10px 4px;
+            border-radius: 10px;
+            background: #F8FAFC;
+        }
+        .macro-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+        .macro-val { font-size: 13px; font-weight: 700; }
+
+        /* --- Progress Components --- */
+        .budget-progress-item { margin-bottom: 16px; }
+        .budget-progress-item:last-child { margin-bottom: 0; }
+        
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #E5E9F0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);
+        }
+
+        /* --- Interactive Components & Inputs --- */
+        .input-group { margin-bottom: 14px; }
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .slider-meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        input[type="number"], input[type="text"], select, input[type="date"] {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #D1D9E6;
+            border-radius: 10px;
+            background-color: #FFF;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus { border-color: var(--color-needs); }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #D1D9E6;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: var(--color-needs);
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* --- Action Controls --- */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        .btn-primary { background-color: var(--color-needs); color: white; }
+        .btn-primary:active { opacity: 0.8; }
+        .btn-action { background-color: var(--color-savings); color: white; }
+        
+        .btn-minor {
+            background: transparent;
+            border: 1px solid var(--color-needs);
+            color: var(--color-needs);
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 20px;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .ledger-filter-select {
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #D1D9E6;
+            border-radius: 8px;
+            background-color: #FFF;
+            width: auto;
+            cursor: pointer;
+        }
+
+        /* --- Dynamic Ledger Rows & Tables --- */
+        .ledger-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F4F8;
+        }
+        .ledger-row:last-child { border-bottom: none; }
+        .ledger-main { display: flex; flex-direction: column; }
+        .ledger-title { font-weight: 600; font-size: 15px; }
+        .ledger-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .ledger-right { display: flex; align-items: center; gap: 8px; }
+        .ledger-value { font-weight: 700; font-size: 15px; }
+        
+        .expense-detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .expense-detail-table th {
+            text-align: left;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E5E9F0;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        .expense-detail-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F4F8;
+            font-weight: 500;
+        }
+        .expense-detail-table tr:last-child td { border-bottom: none; }
+        .expense-detail-table .row-name { font-weight: 600; }
+        .expense-detail-table .row-actual { font-weight: 700; text-align: right; }
+        .expense-detail-table .row-budget { text-align: right; color: var(--text-muted); }
+        .expense-detail-table th.align-right, .expense-detail-table td.align-right { text-align: right; }
+
+        .btn-inline-pay {
+            background: #E8F5E9;
+            color: var(--color-savings);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-inline-edit {
+            background: #EAF2FF;
+            color: var(--color-needs);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-trash {
+            background: transparent; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer;
+            padding: 4px 8px; transition: color 0.2s;
+        }
+        .btn-trash:hover { color: var(--color-alert); }
+
+        /* --- Navigation Architecture Tab Bar --- */
+        nav {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background-color: var(--bg-card);
+            border-top: 1px solid #E5E9F0;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            z-index: 100;
+        }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none; border: none;
+            color: var(--text-muted);
+            font-size: 11px; font-weight: 700;
+            cursor: pointer;
+        }
+        .nav-tab.active { color: var(--color-needs); }
+        .nav-icon { font-size: 22px; margin-bottom: 3px; }
+
+        /* --- Modals --- */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 200; display: none;
+            justify-content: flex-end; flex-direction: column;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            max-height: 85%;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
+        }
+        .modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; }
+        .close-trigger { font-size: 22px; cursor: pointer; color: var(--text-muted); }
+
+        /* Helpers */
+        .alert-bg-bar { background-color: var(--color-alert) !important; }
+        .alert-text-color { color: var(--color-alert) !important; }
+        .c-needs { color: var(--color-needs); }
+        .c-wants { color: var(--color-wants); }
+        .c-savings { color: var(--color-savings); }
+        .u-bold { font-weight: 700; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Finagement</h1>
+    <div class="month-selector-wrapper">
+        <select id="month-navigation-dropdown" class="month-dropdown" onchange="executeMonthNavigationShift()">
+            </select>
+    </div>
+</header>
+
+<div class="main-container">
+
+    <div id="page-overview" class="app-view active">
+        <div class="card">
+            <div class="card-title">Monthly Cash Position</div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px;">
+                <span style="font-size: 14px; font-weight: 600; color: var(--text-muted);">Real Free Balance</span>
+                <span style="font-size: 28px; font-weight: 800;" id="main-real-balance">0.00 RM</span>
+            </div>
+            
+            <div class="macro-grid">
+                <div class="macro-block" style="border-top: 3px solid var(--color-needs);">
+                    <div class="macro-label">Needs Pool</div>
+                    <div class="macro-val" id="macro-needs">0.00</div>
+                </div>
+                <div class="macro-block" style="border-top: 3px solid var(--color-wants);">
+                    <div class="macro-label">Wants Pool</div>
+                    <div class="macro-val" id="macro-wants">0.00</div>
+                </div>
+                <div class="macro-block" style="border-top: 3px solid var(--color-savings);">
+                    <div class="macro-label">Savings Cap</div>
+                    <div class="macro-val" id="macro-savings">0.00</div>
+                </div>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; border-top:1px dashed #E5E9F0; padding-top:10px;">
+                <span class="text-muted">Income Base: <span id="lbl-inc-base">0</span> RM</span>
+                <span class="text-muted">Total Spent: <span id="lbl-spent-base">0</span> RM</span>
+            </div>
+        </div>
+
+        <button class="btn btn-action" onclick="toggleModal('expense-modal', true)">📝 Add Daily Expense</button>
+
+        <div id="alert-warning-card" class="card card-alert-header" style="display: none; margin-top: 16px;">
+            <div class="card-title">⚠️ Over Budget Warning!</div>
+            <div id="alert-items-hook">
+                </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px;">
+            <div class="card-title">Recent Spending Feed</div>
+            <div id="overview-logs-hook">
+                </div>
+        </div>
+    </div>
+
+    <div id="page-details" class="app-view">
+        <div class="card">
+            <div class="card-title">Adjust Core Target Ratios</div>
+            <div class="input-group">
+                <label>Monthly Fixed Revenue (RM)</label>
+                <input type="number" id="cfg-income" onchange="modifyBaseIncome(this.value)">
+            </div>
+            
+            <div class="input-group">
+                <div class="slider-meta-row c-needs"><span>Needs Allocation:</span><span id="v-pct-needs">0% (0.00 RM)</span></div>
+                <input type="range" id="sl-needs" min="0" max="100" value="50" oninput="balanceRatios('needs')">
+            </div>
+            <div class="input-group">
+                <div class="slider-meta-row c-wants"><span>Wants Allocation:</span><span id="v-pct-wants">0% (0.00 RM)</span></div>
+                <input type="range" id="sl-wants" min="0" max="100" value="30" oninput="balanceRatios('wants')">
+            </div>
+            <div class="input-group">
+                <div class="slider-meta-row c-savings"><span>Savings Allocation:</span><span id="v-pct-savings">0% (0.00 RM)</span></div>
+                <input type="range" id="sl-savings" min="0" max="100" value="20" oninput="balanceRatios('savings')">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="budget-form-heading">Create / Update Item Budgets</span>
+                <button class="btn-minor" onclick="triggerManualPreviousMonthCopy()">📋 Append Last Month</button>
+            </div>
+            <input type="hidden" id="cfg-editing-index" value="-1">
+            <div class="input-group">
+                <label>Budget Allocation Group</label>
+                <select id="cfg-item-group">
+                    <option value="Needs">Needs</option>
+                    <option value="Wants" selected>Wants</option>
+                    <option value="Savings">Savings</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Item Name</label>
+                <input type="text" id="cfg-item-name" placeholder="e.g., Coffee, Petrol, Rent">
+            </div>
+            <div class="input-group">
+                <label>Allocated Monthly Cap Target Limit (RM)</label>
+                <input type="number" id="cfg-item-cap" placeholder="500">
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary" style="flex: 2;" onclick="commitCustomBudgetItem()">Save Preset Item</button>
+                <button id="btn-cancel-budget-edit" class="btn" style="flex: 1; background: #E5E9F0; color: var(--text-main); display: none;" onclick="clearBudgetForm()">Cancel</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span>Expense Details Ledger</span>
+                <select id="ledger-category-filter" class="ledger-filter-select" onchange="renderExpenseDetailsTable()">
+                    <option value="ALL">All Categories</option>
+                    <option value="Needs">Needs</option>
+                    <option value="Wants">Wants</option>
+                    <option value="Savings">Savings</option>
+                </select>
+            </div>
+            <table class="expense-detail-table">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th class="align-right">Budget</th>
+                        <th class="align-right">Actual</th>
+                        <th class="align-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="details-table-hook">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Yearly Performance Dashboard</div>
+            <div id="annual-matrix-hook">
+                </div>
+        </div>
+    </div>
+
+    <div id="page-debts" class="app-view">
+        <div class="card">
+            <div id="debt-form-heading" class="card-title">Create New Debt Facility</div>
+            <input type="hidden" id="debt-editing-index" value="-1">
+            <div class="input-group">
+                <label>Debt Register Label Name</label>
+                <input type="text" id="debt-reg-name" placeholder="e.g., Bike Loan, Car Loan">
+            </div>
+            <div class="input-group">
+                <label>Initial Total Debt Principal (RM)</label>
+                <input type="number" id="debt-reg-total" placeholder="15000">
+            </div>
+            <div class="input-group">
+                <label>Monthly Installment Target</label>
+                <input type="number" id="debt-reg-installment" placeholder="450">
+            </div>
+            
+            <div class="input-group" id="debt-connect-toggle-row">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="debt-connect-budget" checked>
+                    <label for="debt-connect-budget">Automatically create a tracking item under Needs</label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button id="btn-submit-debt" class="btn btn-primary" style="flex: 2;" onclick="commitDebtRegistry()">Register Debt Line</button>
+                <button id="btn-cancel-debt-edit" class="btn" style="flex: 1; background: #E5E9F0; color: var(--text-main); display: none;" onclick="clearDebtForm()">Cancel</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="display:flex; justify-content:space-between;">
+                <span>Active Debts Balance Ledger</span>
+                <span id="debt-aggregate-summary" class="u-bold alert-text-color">0.00 RM</span>
+            </div>
+            <div id="debt-list-hook">
+                </div>
+        </div>
+    </div>
+
+</div>
+
+<nav>
+    <button class="nav-tab active" onclick="navigatePage('overview', this)">
+        <span class="nav-icon">📱</span><span>Overview</span>
+    </button>
+    <button class="nav-tab" onclick="navigatePage('details', this)">
+        <span class="nav-icon">⚙️</span><span>Details</span>
+    </button>
+    <button class="nav-tab" onclick="navigatePage('debts', this)">
+        <span class="nav-icon">💳</span><span>Debts Tracker</span>
+    </button>
+</nav>
+
+<div id="expense-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Log Daily Expenditure Transaction</h3>
+            <span class="close-trigger" onclick="toggleModal('expense-modal', false)">&times;</span>
+        </div>
+        <div class="input-group">
+            <label>Transaction Date</label>
+            <input type="date" id="log-date-field">
+        </div>
+        <div class="input-group">
+            <label>Pre-set Tracked Item Categorization Link</label>
+            <select id="log-preset-selector">
+                </select>
+        </div>
+        <div class="input-group">
+            <label>Amount Disbursed (RM)</label>
+            <input type="number" id="log-amount-field" placeholder="0.00" step="0.01">
+        </div>
+        <button class="btn btn-primary" onclick="submitDailyExpenseEntry()">Log Transaction Entry</button>
+    </div>
+</div>
+
+<div id="debt-repay-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Record Debt Payment Installment</h3>
+            <span class="close-trigger" onclick="toggleModal('debt-repay-modal', false)">&times;</span>
+        </div>
+        <input type="hidden" id="repay-target-index">
+        <div class="input-group">
+            <label>Installment Payment Amount (RM)</label>
+            <input type="number" id="repay-amount-field" placeholder="0.00" step="0.01">
+        </div>
+        <button class="btn btn-action" onclick="submitDebtRepayment()">Execute Installment Log</button>
+    </div>
+</div>
+
+<script>
+    // --- Clock Synchronization & State Initializer Modules ---
+    const dateEngine = new Date();
+    const activeYear = dateEngine.getFullYear();
+    const activeMonthNum = dateEngine.getMonth() + 1; 
+    const monthsArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    let currentMonthKey = `${monthsArray[activeMonthNum - 1]} ${activeYear}`;
+
+    let localEngine = JSON.parse(localStorage.getItem('finance_canvas_v3')) || {
+        months: {},
+        debts: []
+    };
+
+    function initSpecificMonthSchema(key) {
+        if (!localEngine.months[key]) {
+            localEngine.months[key] = {
+                income: 3700,
+                percentages: { needs: 50, wants: 30, savings: 20 },
+                budgets: [
+                    { group: "Needs", name: "Rent", cap: 860 },
+                    { group: "Needs", name: "Food Base", cap: 450 },
+                    { group: "Wants", name: "Coffee", cap: 500 }
+                ],
+                expenses: []
+            };
+            
+            if (localEngine.debts && localEngine.debts.length > 0) {
+                localEngine.debts.forEach(d => {
+                    if (d.connectToBudget !== false) {
+                        localEngine.months[key].budgets.push({
+                            group: "Needs",
+                            name: d.name,
+                            cap: d.targetInstallment || 400
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+    function buildGlobalMonthNavigationDropdown() {
+        const dropdown = document.getElementById('month-navigation-dropdown');
+        dropdown.innerHTML = '';
+        
+        monthsArray.forEach(m => {
+            const keyStr = `${m} ${activeYear}`;
+            initSpecificMonthSchema(keyStr); 
+            
+            let option = document.createElement('option');
+            option.value = keyStr;
+            option.textContent = keyStr;
+            if(keyStr === currentMonthKey) option.selected = true;
+            dropdown.appendChild(option);
+        });
+    }
+
+    function executeMonthNavigationShift() {
+        currentMonthKey = document.getElementById('month-navigation-dropdown').value;
+        
+        const activeState = localEngine.months[currentMonthKey];
+        document.getElementById('cfg-income').value = activeState.income;
+        document.getElementById('sl-needs').value = activeState.percentages.needs;
+        document.getElementById('sl-wants').value = activeState.percentages.wants;
+        document.getElementById('sl-savings').value = activeState.percentages.savings;
+        
+        clearBudgetForm();
+        clearDebtForm();
+        updateSliderLabels();
+        
+        renderDashboardView();
+        renderExpenseDetailsTable();
+        renderAnnualPerformanceGrid();
+    }
+
+    function bootStateEngine() {
+        buildGlobalMonthNavigationDropdown();
+        executeMonthNavigationShift();
+    }
+
+    function commitDatabase() {
+        localStorage.setItem('finance_canvas_v3', JSON.stringify(localEngine));
+    }
+
+    // --- Page Routing Layer Navigation Engines ---
+    function navigatePage(targetId, navButton) {
+        document.querySelectorAll('.app-view').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById('page-' + targetId).classList.add('active');
+        navButton.classList.add('active');
+
+        if (targetId === 'overview') renderDashboardView();
+        if (targetId === 'details') { 
+            renderExpenseDetailsTable(); 
+            renderAnnualPerformanceGrid(); 
+            updateSliderLabels(); // Ensure dynamic numbers refresh nicely on tab switch
+        }
+        if (targetId === 'debts') renderDebtTrackerLedger();
+    }
+
+    function toggleModal(modalId, displayToggle) {
+        const modal = document.getElementById(modalId);
+        if(displayToggle) {
+            modal.classList.add('show');
+            if(modalId === 'expense-modal') populatePresetSelectors();
+        } else {
+            modal.classList.remove('show');
+        }
+    }
+
+    // --- Page 1 Framework: Main Overview & Over Budget Logic ---
+    function populatePresetSelectors() {
+        document.getElementById('log-date-field').valueAsDate = new Date();
+        const selector = document.getElementById('log-preset-selector');
+        selector.innerHTML = '';
+        
+        localEngine.months[currentMonthKey].budgets.forEach(b => {
+            let opt = document.createElement('option');
+            opt.value = b.name;
+            opt.textContent = `[${b.group}] - ${b.name}`;
+            selector.appendChild(opt);
+        });
+    }
+
+    function recalculateDebtPaymentsFromLogFeeds() {
+        if(!localEngine.debts) return;
+        
+        localEngine.debts.forEach(d => { d.paid = 0; });
+
+        Object.keys(localEngine.months).forEach(mKey => {
+            localEngine.months[mKey].expenses.forEach(exp => {
+                let matchingDebt = localEngine.debts.find(d => d.name.toLowerCase() === exp.item.toLowerCase());
+                if(matchingDebt) {
+                    matchingDebt.paid += exp.cost;
+                }
+            });
+        });
+    }
+
+    function renderDashboardView() {
+        recalculateDebtPaymentsFromLogFeeds();
+        const state = localEngine.months[currentMonthKey];
+        
+        let totalDisbursed = 0;
+        let itemSpendingAccumulator = {};
+
+        state.expenses.forEach(e => {
+            totalDisbursed += e.cost;
+            itemSpendingAccumulator[e.item] = (itemSpendingAccumulator[e.item] || 0) + e.cost;
+        });
+
+        let remainingBalance = state.income - totalDisbursed;
+        
+        document.getElementById('main-real-balance').textContent = remainingBalance.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' RM';
+        document.getElementById('lbl-inc-base').textContent = state.income.toLocaleString();
+        document.getElementById('lbl-spent-base').textContent = totalDisbursed.toLocaleString('en-US', {minimumFractionDigits: 2});
+
+        document.getElementById('macro-needs').textContent = (state.income * (state.percentages.needs / 100)).toFixed(0) + ' RM';
+        document.getElementById('macro-wants').textContent = (state.income * (state.percentages.wants / 100)).toFixed(0) + ' RM';
+        document.getElementById('macro-savings').textContent = (state.income * (state.percentages.savings / 100)).toFixed(0) + ' RM';
+
+        const alertCardElement = document.getElementById('alert-warning-card');
+        const alertItemsHook = document.getElementById('alert-items-hook');
+        alertItemsHook.innerHTML = '';
+        let triggerAlertFlag = false;
+
+        state.budgets.forEach(b => {
+            const expenseSpent = itemSpendingAccumulator[b.name] || 0;
+            
+            if (expenseSpent > b.cap) {
+                triggerAlertFlag = true;
+                const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
+                
+                let wrapper = document.createElement('div');
+                wrapper.className = 'budget-progress-item';
+                wrapper.innerHTML = `
+                    <div class="progress-meta alert-text-color">
+                        <span>${b.name} <small style="color:var(--text-muted); font-weight:500;">(${b.group})</small></span>
+                        <span>Over limit by ${(expenseSpent - b.cap).toFixed(2)} RM</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill alert-bg-bar" style="width: ${utilizationPct}%;"></div>
+                    </div>
+                `;
+                alertItemsHook.appendChild(wrapper);
+            }
+        });
+
+        alertCardElement.style.display = triggerAlertFlag ? 'block' : 'none';
+
+        const logsHook = document.getElementById('overview-logs-hook');
+        logsHook.innerHTML = '';
+        if(!state.expenses.length) {
+            logsHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No entries recorded.</div>';
+        } else {
+            state.expenses.slice().reverse().forEach(e => {
+                let logRow = document.createElement('div');
+                logRow.className = 'ledger-row';
+                logRow.innerHTML = `
+                    <div class="ledger-main">
+                        <span class="ledger-title">${e.item}</span>
+                        <span class="ledger-subtitle">${e.date} • ${e.group}</span>
+                    </div>
+                    <div class="ledger-right">
+                        <span class="ledger-value">- ${e.cost.toFixed(2)} RM</span>
+                        <button class="btn-trash" onclick="purgeExpenseLogItem(${e.id})">✕</button>
+                    </div>
+                `;
+                logsHook.appendChild(logRow);
+            });
+        }
+    }
+
+    function submitDailyExpenseEntry() {
+        const date = document.getElementById('log-date-field').value;
+        const itemName = document.getElementById('log-preset-selector').value;
+        const costValue = parseFloat(document.getElementById('log-amount-field').value);
+
+        if (!date || !itemName || isNaN(costValue) || costValue <= 0) return alert("Please check transaction field parameters.");
+
+        const targetPreset = localEngine.months[currentMonthKey].budgets.find(b => b.name === itemName);
+        
+        localEngine.months[currentMonthKey].expenses.push({
+            id: Date.now(),
+            date,
+            item: itemName,
+            group: targetPreset.group,
+            cost: costValue
+        });
+
+        commitDatabase();
+        renderDashboardView();
+        toggleModal('expense-modal', false);
+        document.getElementById('log-amount-field').value = '';
+    }
+
+    function purgeExpenseLogItem(id) {
+        localEngine.months[currentMonthKey].expenses = localEngine.months[currentMonthKey].expenses.filter(e => e.id !== id);
+        commitDatabase();
+        renderDashboardView();
+    }
+
+    // --- Page 2 Framework: Ratios Balancing & Detail Presets Configuration ---
+    function updateSliderLabels() {
+        const incomeBase = localEngine.months[currentMonthKey].income;
+        
+        const pctNeeds = parseInt(document.getElementById('sl-needs').value) || 0;
+        const pctWants = parseInt(document.getElementById('sl-wants').value) || 0;
+        const pctSavings = parseInt(document.getElementById('sl-savings').value) || 0;
+
+        const rmNeeds = (incomeBase * (pctNeeds / 100)).toFixed(2);
+        const rmWants = (incomeBase * (pctWants / 100)).toFixed(2);
+        const rmSavings = (incomeBase * (pctSavings / 100)).toFixed(2);
+
+        document.getElementById('v-pct-needs').textContent = `${pctNeeds}% (${rmNeeds} RM)`;
+        document.getElementById('v-pct-wants').textContent = `${pctWants}% (${rmWants} RM)`;
+        document.getElementById('v-pct-savings').textContent = `${pctSavings}% (${rmSavings} RM)`;
+    }
+
+    function balanceRatios(shiftedFactor) {
+        let n = parseInt(document.getElementById('sl-needs').value) || 0;
+        let w = parseInt(document.getElementById('sl-wants').value) || 0;
+        let s = parseInt(document.getElementById('sl-savings').value) || 0;
+
+        let trackingTotal = n + w + s;
+        let difference = 100 - trackingTotal;
+
+        if (difference !== 0) {
+            if (shiftedFactor === 'needs') {
+                let distributionShare = w + s;
+                if(distributionShare > 0) {
+                    document.getElementById('sl-wants').value = Math.max(0, w + Math.round(difference * (w / distributionShare)));
+                    document.getElementById('sl-savings').value = Math.max(0, s + Math.round(difference * (s / distributionShare)));
+                } else {
+                    document.getElementById('sl-wants').value = Math.max(0, w + Math.round(difference / 2));
+                    document.getElementById('sl-savings').value = Math.max(0, s + Math.round(difference / 2));
+                }
+            } else if (shiftedFactor === 'wants') {
+                let distributionShare = n + s;
+                if(distributionShare > 0) {
+                    document.getElementById('sl-needs').value = Math.max(0, n + Math.round(difference * (n / distributionShare)));
+                    document.getElementById('sl-savings').value = Math.max(0, s + Math.round(difference * (s / distributionShare)));
+                } else {
+                    document.getElementById('sl-needs').value = Math.max(0, n + Math.round(difference / 2));
+                    document.getElementById('sl-savings').value = Math.max(0, s + Math.round(difference / 2));
+                }
+            } else if (shiftedFactor === 'savings') {
+                let distributionShare = n + w;
+                if(distributionShare > 0) {
+                    document.getElementById('sl-needs').value = Math.max(0, n + Math.round(difference * (n / distributionShare)));
+                    document.getElementById('sl-wants').value = Math.max(0, w + Math.round(difference * (w / distributionShare)));
+                } else {
+                    document.getElementById('sl-needs').value = Math.max(0, n + Math.round(difference / 2));
+                    document.getElementById('sl-wants').value = Math.max(0, w + Math.round(difference / 2));
+                }
+            }
+        }
+
+        updateSliderLabels();
+        localEngine.months[currentMonthKey].percentages.needs = parseInt(document.getElementById('sl-needs').value);
+        localEngine.months[currentMonthKey].percentages.wants = parseInt(document.getElementById('sl-wants').value);
+        localEngine.months[currentMonthKey].percentages.savings = parseInt(document.getElementById('sl-savings').value);
+        commitDatabase();
+    }
+
+    function modifyBaseIncome(numericVal) {
+        localEngine.months[currentMonthKey].income = parseFloat(numericVal) || 0;
+        commitDatabase();
+        updateSliderLabels(); // Dynamically refresh RM calculations when income changes
+    }
+
+    function commitCustomBudgetItem() {
+        const group = document.getElementById('cfg-item-group').value;
+        const name = document.getElementById('cfg-item-name').value.trim();
+        const cap = parseFloat(document.getElementById('cfg-item-cap').value);
+        const editingIndex = parseInt(document.getElementById('cfg-editing-index').value);
+
+        if(!name || isNaN(cap) || cap <= 0) return alert("Verify budget structure data forms!");
+
+        let collection = localEngine.months[currentMonthKey].budgets;
+
+        if (editingIndex >= 0) {
+            const historicalName = collection[editingIndex].name;
+            if (historicalName.toLowerCase() !== name.toLowerCase()) {
+                localEngine.months[currentMonthKey].expenses.forEach(e => {
+                    if (e.item.toLowerCase() === historicalName.toLowerCase()) {
+                        e.item = name;
+                        e.group = group;
+                    }
+                });
+            }
+            collection[editingIndex] = { group, name, cap };
+        } else {
+            let match = collection.find(i => i.name.toLowerCase() === name.toLowerCase());
+            if (match) {
+                match.group = group;
+                match.cap = cap;
+            } else {
+                collection.push({ group, name, cap });
+            }
+        }
+
+        commitDatabase();
+        renderExpenseDetailsTable();
+        clearBudgetForm();
+    }
+
+    function loadBudgetEditPreset(index) {
+        const target = localEngine.months[currentMonthKey].budgets[index];
+        document.getElementById('cfg-editing-index').value = index;
+        document.getElementById('cfg-item-group').value = target.group;
+        document.getElementById('cfg-item-name').value = target.name;
+        document.getElementById('cfg-item-cap').value = target.cap;
+        
+        document.getElementById('budget-form-heading').textContent = "✏️ Editing: " + target.name;
+        document.getElementById('btn-cancel-budget-edit').style.display = "block";
+        document.getElementById('cfg-item-name').focus();
+    }
+
+    function clearBudgetForm() {
+        document.getElementById('cfg-editing-index').value = "-1";
+        document.getElementById('cfg-item-name').value = "";
+        document.getElementById('cfg-item-cap').value = "";
+        document.getElementById('budget-form-heading').textContent = "Create / Update Item Budgets";
+        document.getElementById('btn-cancel-budget-edit').style.display = "none";
+    }
+
+    function triggerManualPreviousMonthCopy() {
+        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]);
+        if(currentMonthIdx <= 0) return alert("No historical matching system records found for previous months inside 2026.");
+
+        const previousTargetKey = `${monthsArray[currentMonthIdx - 1]} ${activeYear}`;
+        const historicalProfileSource = localEngine.months[previousTargetKey];
+
+        if(!historicalProfileSource || !historicalProfileSource.budgets || historicalProfileSource.budgets.length === 0) {
+            return alert(`Could not locate a compiled tracking profile source sheet for ${previousTargetKey}`);
+        }
+
+        let currentCollection = localEngine.months[currentMonthKey].budgets;
+        let addedCount = 0;
+
+        historicalProfileSource.budgets.forEach(oldItem => {
+            let itemExists = currentCollection.some(curr => curr.name.toLowerCase() === oldItem.name.toLowerCase());
+            if (!itemExists) {
+                currentCollection.push(JSON.parse(JSON.stringify(oldItem)));
+                addedCount++;
+            }
+        });
+
+        commitDatabase();
+        renderExpenseDetailsTable();
+        alert(`Appended ${addedCount} missing budget items from ${previousTargetKey} without removing your current items!`);
+    }
+
+    function renderExpenseDetailsTable() {
+        const tableBody = document.getElementById('details-table-hook');
+        tableBody.innerHTML = '';
+        
+        const state = localEngine.months[currentMonthKey];
+        const activeFilter = document.getElementById('ledger-category-filter').value;
+        
+        let itemSpendingAccumulator = {};
+        state.expenses.forEach(e => {
+            itemSpendingAccumulator[e.item] = (itemSpendingAccumulator[e.item] || 0) + e.cost;
+        });
+
+        let filteredBudgets = state.budgets;
+        if (activeFilter !== 'ALL') {
+            filteredBudgets = state.budgets.filter(b => b.group === activeFilter);
+        }
+
+        if(filteredBudgets.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No entries matching layout rule constraints.</td></tr>`;
+            return;
+        }
+
+        filteredBudgets.forEach((b) => {
+            const trueSourceIndex = state.budgets.findIndex(orig => orig.name === b.name);
+            const actualSpent = itemSpendingAccumulator[b.name] || 0;
+            let textAlertStyle = actualSpent > b.cap ? 'alert-text-color' : '';
+
+            let tableRow = document.createElement('tr');
+            tableRow.className = textAlertStyle;
+            tableRow.innerHTML = `
+                <td class="row-name">${b.name}</td>
+                <td>${b.group}</td>
+                <td class="row-budget">${b.cap.toFixed(2)} RM</td>
+                <td class="row-actual ${actualSpent > b.cap ? 'alert-text-color' : ''}">${actualSpent.toFixed(2)} RM</td>
+                <td class="align-right">
+                    <button class="btn-inline-edit" onclick="loadBudgetEditPreset(${trueSourceIndex})">Edit</button>
+                    <button class="btn-trash" onclick="purgeBudgetItemPreset(${trueSourceIndex})">✕</button>
+                </td>
+            `;
+            tableBody.appendChild(tableRow);
+        });
+    }
+
+    function purgeBudgetItemPreset(index) {
+        if(confirm("Permanently erase this item preset restriction from this month's watchlist mapping engine?")) {
+            localEngine.months[currentMonthKey].budgets.splice(index, 1);
+            commitDatabase();
+            renderExpenseDetailsTable();
+        }
+    }
+
+    function renderAnnualPerformanceGrid() {
+        const hook = document.getElementById('annual-matrix-hook');
+        hook.innerHTML = '';
+
+        let calculatedYearlyIncome = 0;
+        let calculatedYearlySpent = 0;
+
+        Object.keys(localEngine.months).forEach(k => {
+            calculatedYearlyIncome += localEngine.months[k].income;
+            localEngine.months[k].expenses.forEach(e => { calculatedYearlySpent += e.cost; });
+        });
+
+        let netYearlySavingsBalance = calculatedYearlyIncome - calculatedYearlySpent;
+
+        let innerGridStructure = document.createElement('div');
+        innerGridStructure.className = 'macro-grid';
+        innerGridStructure.style.marginTop = '10px';
+        innerGridStructure.innerHTML = `
+            <div class="macro-block"><div class="macro-label">YTD Income</div><div class="macro-val">${calculatedYearlyIncome.toLocaleString()} RM</div></div>
+            <div class="macro-block"><div class="macro-label">YTD Spent</div><div class="macro-val c-debt">${calculatedYearlySpent.toLocaleString()} RM</div></div>
+            <div class="macro-block"><div class="macro-label">YTD Savings</div><div class="macro-val c-savings">${netYearlySavingsBalance.toLocaleString()} RM</div></div>
+        `;
+        hook.appendChild(innerGridStructure);
+    }
+
+    // --- Page 3 Framework: Debt Facility Tracker Ledger Mechanics ---
+    function commitDebtRegistry() {
+        const label = document.getElementById('debt-reg-name').value.trim();
+        const absolutePrincipal = parseFloat(document.getElementById('debt-reg-total').value);
+        const targetInst = parseFloat(document.getElementById('debt-reg-installment').value) || 0;
+        const connectToBudget = document.getElementById('debt-connect-budget').checked;
+        const editingIndex = parseInt(document.getElementById('debt-editing-index').value);
+
+        if (!label || isNaN(absolutePrincipal) || absolutePrincipal <= 0) return alert("Verify structural debt details!");
+
+        if (editingIndex >= 0) {
+            let oldDebtName = localEngine.debts[editingIndex].name;
+            localEngine.debts[editingIndex] = {
+                name: label,
+                total: absolutePrincipal,
+                paid: localEngine.debts[editingIndex].paid,
+                targetInstallment: targetInst,
+                connectToBudget: connectToBudget
+            };
+
+            if (oldDebtName.toLowerCase() !== label.toLowerCase()) {
+                Object.keys(localEngine.months).forEach(mKey => {
+                    localEngine.months[mKey].budgets.forEach(b => {
+                        if (b.name.toLowerCase() === oldDebtName.toLowerCase()) b.name = label;
+                    });
+                    localEngine.months[mKey].expenses.forEach(e => {
+                        if (e.item.toLowerCase() === oldDebtName.toLowerCase()) e.item = label;
+                    });
+                });
+            }
+        } else {
+            localEngine.debts.push({
+                name: label,
+                total: absolutePrincipal,
+                paid: 0,
+                targetInstallment: targetInst,
+                connectToBudget: connectToBudget
+            });
+        }
+
+        if (connectToBudget) {
+            let existsInActiveMonth = localEngine.months[currentMonthKey].budgets.some(b => b.name.toLowerCase() === label.toLowerCase());
+            if (!existsInActiveMonth) {
+                localEngine.months[currentMonthKey].budgets.push({
+                    group: "Needs",
+                    name: label,
+                    cap: targetInst
+                });
+            } else {
+                let currentItem = localEngine.months[currentMonthKey].budgets.find(b => b.name.toLowerCase() === label.toLowerCase());
+                currentItem.cap = targetInst;
+            }
+        }
+
+        commitDatabase();
+        renderDebtTrackerLedger();
+        clearDebtForm();
+        alert(`Successfully finalized registration metrics for "${label}".`);
+    }
+
+    function loadDebtEditPreset(index) {
+        const target = localEngine.debts[index];
+        document.getElementById('debt-editing-index').value = index;
+        document.getElementById('debt-reg-name').value = target.name;
+        document.getElementById('debt-reg-total').value = target.total;
+        document.getElementById('debt-reg-installment').value = target.targetInstallment;
+        document.getElementById('debt-connect-budget').checked = target.connectToBudget !== false;
+
+        document.getElementById('debt-form-heading').textContent = "✏️ Editing Debt Line: " + target.name;
+        document.getElementById('btn-submit-debt').textContent = "Update Details";
+        document.getElementById('btn-cancel-debt-edit').style.display = "block";
+        document.getElementById('debt-reg-name').focus();
+    }
+
+    function clearDebtForm() {
+        document.getElementById('debt-editing-index').value = "-1";
+        document.getElementById('debt-reg-name').value = "";
+        document.getElementById('debt-reg-total').value = "";
+        document.getElementById('debt-reg-installment').value = "";
+        document.getElementById('debt-connect-budget').checked = true;
+        
+        document.getElementById('debt-form-heading').textContent = "Create New Debt Facility";
+        document.getElementById('btn-submit-debt').textContent = "Register Debt Line";
+        document.getElementById('btn-cancel-debt-edit').style.display = "none";
+    }
+
+    function renderDebtTrackerLedger() {
+        recalculateDebtPaymentsFromLogFeeds();
+        const listHook = document.getElementById('debt-list-hook');
+        listHook.innerHTML = '';
+        let globalOutstandingDebtSum = 0;
+
+        let dbOutstanding = localEngine.debts || [];
+        if(dbOutstanding.length === 0) {
+            listHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No recorded active liabilities.</div>';
+            document.getElementById('debt-aggregate-summary').textContent = '0.00 RM';
+            return;
+        }
+
+        dbOutstanding.forEach((d, index) => {
+            let actualOwedBalance = d.total - d.paid;
+            globalOutstandingDebtSum += actualOwedBalance;
+
+            let row = document.createElement('div');
+            row.className = 'ledger-row';
+            row.innerHTML = `
+                <div class="ledger-main">
+                    <span class="ledger-title">${d.name} <small style="color:var(--text-muted); font-weight:normal;">${d.connectToBudget !== false ? '(Linked)' : '(Isolated)'}</small></span>
+                    <span class="ledger-subtitle">Paid: ${d.paid.toFixed(2)} / ${d.total.toFixed(2)} RM</span>
+                </div>
+                <div class="ledger-right">
+                    <span class="ledger-value c-debt">${actualOwedBalance.toLocaleString('en-US', {minimumFractionDigits: 2})} RM</span>
+                    <button class="btn-inline-pay" onclick="triggerInlineRepaymentSheet(${index})">Pay</button>
+                    <button class="btn-inline-edit" onclick="loadDebtEditPreset(${index})">Edit</button>
+                    <button class="btn-trash" onclick="purgeDebtProfileLine(${index})">✕</button>
+                </div>
+            `;
+            listHook.appendChild(row);
+        });
+
+        document.getElementById('debt-aggregate-summary').textContent = globalOutstandingDebtSum.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' RM';
+    }
+
+    function triggerInlineRepaymentSheet(index) {
+        document.getElementById('repay-target-index').value = index;
+        toggleModal('debt-repay-modal', true);
+    }
+
+    function submitDebtRepayment() {
+        const targetIndex = parseInt(document.getElementById('repay-target-index').value);
+        const inputPaymentValue = parseFloat(document.getElementById('repay-amount-field').value);
+
+        if(isNaN(inputPaymentValue) || inputPaymentValue <= 0) return alert("Please check the input amount.");
+
+        let targetDebt = localEngine.debts[targetIndex];
+
+        localEngine.months[currentMonthKey].expenses.push({
+            id: Date.now(),
+            date: new Date().toISOString().split('T')[0],
+            item: targetDebt.name,
+            group: "Needs",
+            cost: inputPaymentValue
+        });
+
+        commitDatabase();
+        renderDebtTrackerLedger();
+        toggleModal('debt-repay-modal', false);
+        document.getElementById('repay-amount-field').value = '';
+        
+        alert(`Logged a transaction entry under "${targetDebt.name}" for this month. Balances synchronized successfully!`);
+    }
+
+    function purgeDebtProfileLine(index) {
+        if (confirm("Are you sure you want to remove this debt profile line permanently? (This will not delete existing logged expenses)")) {
+            localEngine.debts.splice(index, 1);
+            commitDatabase();
+            renderDebtTrackerLedger();
+        }
+    }
+
+    bootStateEngine();
+</script>
+
+</body>
+</html>
