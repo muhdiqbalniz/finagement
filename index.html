@@ -145,6 +145,31 @@
             margin-bottom: 14px;
         }
 
+        /* PAGE QUICK GUIDES SYSTEM */
+        .guide-box {
+            background: rgba(0, 122, 255, 0.05);
+            border: 1px dashed var(--color-needs);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .guide-box ul { margin: 6px 0 0 0; padding-left: 20px; }
+        .guide-box li { margin-bottom: 4px; }
+        .guide-toggle-btn {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--color-needs);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
         .card-alert-header { background-color: rgba(255, 59, 48, 0.1); border: 1px solid var(--color-alert); }
         .card-alert-header .card-title { color: var(--color-alert); }
 
@@ -305,6 +330,20 @@
 
         <!-- PAGE 1: OVERVIEW -->
         <div id="page-overview" class="app-view active">
+            <div class="card" style="padding-bottom:12px;">
+                <div class="card-title">
+                    Overview Guide
+                    <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-overview-box')">Toggle Details</button>
+                </div>
+                <div id="guide-overview-box" class="guide-box">
+                    <strong>📱 Executive Dashboard Insights:</strong>
+                    <ul>
+                        <li><strong>Real Free Balance:</strong> Your available money remaining right now after subtracting all tracked expenses out of your calculated Nett Pay.</li>
+                        <li><strong>Framework Pools:</strong> Live visual caps showing the full theoretical funds assigned to your micro categories.</li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title">Monthly Cash Position</div>
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px;">
@@ -344,10 +383,28 @@
             </div>
         </div>
 
-        <!-- PAGE 2: EARNING PAGE (Calculates Nett Pay + Hosts Ratios) -->
+        <!-- PAGE 2: EARNING PAGE -->
         <div id="page-earning" class="app-view">
+            <div class="card" style="padding-bottom:12px;">
+                <div class="card-title">
+                    Earnings Guide
+                    <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-earning-box')">Toggle Details</button>
+                </div>
+                <div id="guide-earning-box" class="guide-box">
+                    <strong>💵 Payroll Operations &amp; Ratios:</strong>
+                    <ul>
+                        <li>Input your Base Salary and inject dynamic custom rows for items like allowances or statutory deductions (EPF/SOCSO).</li>
+                        <li>The system automatically computes your true <strong>Nett Take-Home Pay</strong>.</li>
+                        <li>Use the balanced target sliders to distribute this exact income baseline across Needs, Wants, and Savings framework limits.</li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="card">
-                <div class="card-title">Payroll Nett Pay Calculator</div>
+                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Payroll Nett Pay Calculator</span>
+                    <button class="btn-minor" onclick="triggerManualPreviousMonthPayrollCopy()">📋 Copy Previous Month</button>
+                </div>
                 <div class="input-group">
                     <label>Base / Basic Salary (RM)</label>
                     <input type="number" id="pay-basic-salary" placeholder="0.00" oninput="calculatePayrollNettOutput()">
@@ -389,8 +446,23 @@
             </div>
         </div>
 
-        <!-- PAGE 3: EXPENSES (Item Budgets and Logs Ledger) -->
+        <!-- PAGE 3: EXPENSES -->
         <div id="page-expenses" class="app-view">
+            <div class="card" style="padding-bottom:12px;">
+                <div class="card-title">
+                    Expenses Guide
+                    <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-expenses-box')">Toggle Details</button>
+                </div>
+                <div id="guide-expenses-box" class="guide-box">
+                    <strong>⚙️ Budget Custom Presets Matrix:</strong>
+                    <ul>
+                        <li>Build operational tracking category rows under Needs, Wants, or Savings (e.g., Petrol, Groceries).</li>
+                        <li>Assign fixed limits to establish an outbound tracking boundary ledger.</li>
+                        <li>The framework details table dynamically updates to monitor actual daily spending inputs vs your target allotment parameters.</li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
                     <span id="budget-form-heading">Create / Update Target Allocations</span>
@@ -445,6 +517,21 @@
 
         <!-- PAGE 4: DEBT TRACKER -->
         <div id="page-debts" class="app-view">
+            <div class="card" style="padding-bottom:12px;">
+                <div class="card-title">
+                    Debts Guide
+                    <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-debts-box')">Toggle Details</button>
+                </div>
+                <div id="guide-debts-box" class="guide-box">
+                    <strong>💳 Amortization and Balance Registry:</strong>
+                    <ul>
+                        <li>Log total principal parameters values to track complete long-term outstanding lines.</li>
+                        <li>Check "Auto-populate" to link an expenditure element directly under <strong>Needs</strong> inside your expense budget loop.</li>
+                        <li>Click <strong>Pay</strong> inside the list to process an active transaction log adjustment.</li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="card">
                 <div id="debt-form-heading" class="card-title">Create New Debt Facility</div>
                 <input type="hidden" id="debt-editing-index" value="-1">
@@ -540,6 +627,16 @@
     let currentMonthKey = `${monthsArray[activeMonthNum - 1]} ${activeYear}`;
 
     let localEngine = { months: {}, debts: [], hasSeenTutorial: false };
+
+    // Toggle functional display logic for guides
+    function toggleGuideBlock(guideId) {
+        const target = document.getElementById(guideId);
+        if(target.style.display === "none") {
+            target.style.display = "block";
+        } else {
+            target.style.display = "none";
+        }
+    }
 
     function toggleAuthForms(toSignUp) {
         document.getElementById('card-auth-login').style.display = toSignUp ? 'none' : 'block';
@@ -695,13 +792,12 @@
         if (!localEngine.months[key]) {
             localEngine.months[key] = {
                 income: 0,
-                payroll: { basic: 0, allowances: [], deductions: [] }, // Clean multi-tenant initialization parameters
+                payroll: { basic: 0, allowances: [], deductions: [] },
                 percentages: { needs: 0, wants: 0, savings: 0 },
                 budgets: [],
                 expenses: []
             };
         }
-        // Upgrade verification script check for backward parsing compatibility rules
         if(!localEngine.months[key].payroll) {
             localEngine.months[key].payroll = { basic: localEngine.months[key].income || 0, allowances: [], deductions: [] };
         }
@@ -728,14 +824,13 @@
         document.getElementById('sl-wants').value = state.percentages.wants || 0;
         document.getElementById('sl-savings').value = state.percentages.savings || 0;
         
-        // Render dynamic allowances and deduction dynamic container matrices
         document.getElementById('allowances-container').innerHTML = '';
         state.payroll.allowances.forEach(a => addPayrollRow('allowance', a.name, a.value));
         
         document.getElementById('deductions-container').innerHTML = '';
         state.payroll.deductions.forEach(d => addPayrollRow('deduction', d.name, d.value));
 
-        calculatePayrollNettOutput(false); // Evaluate data calculations silently without resetting modifications
+        calculatePayrollNettOutput(false); 
         clearBudgetForm(); clearDebtForm(); updateSliderLabels();
         renderDashboardView(); renderExpenseDetailsTable(); renderAnnualPerformanceGrid();
     }
@@ -786,12 +881,46 @@
         });
 
         const derivedNettPay = (basicSalary + totalAllowances) - totalDeductions;
-        state.income = derivedNettPay; // Derived take-home overrides income calculation variables cleanly
+        state.income = derivedNettPay; 
 
         document.getElementById('computed-nett-label').textContent = derivedNettPay.toLocaleString('en-US', {minimumFractionDigits:2}) + ' RM';
         
         updateSliderLabels();
         if(shouldSaveToDatabase) commitDatabase();
+    }
+
+    // COPY PREVIOUS MONTH PAYROLL DATA INTERFACE
+    function triggerManualPreviousMonthPayrollCopy() {
+        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); 
+        if(currentMonthIdx <= 0) return alert("No history profile framework detected for previous periods.");
+        
+        const targetKey = `${monthsArray[currentMonthIdx - 1]} ${activeYear}`; 
+        const source = localEngine.months[targetKey];
+        
+        if(!source || !source.payroll || (!source.payroll.basic && source.payroll.allowances.length === 0 && source.payroll.deductions.length === 0)) {
+            return alert(`No payroll configurations discovered within historical ledger entry for ${targetKey}`);
+        }
+
+        if(!confirm(`Overwrite current entries and import your payroll profile parameters from ${targetKey}?`)) return;
+
+        const state = localEngine.months[currentMonthKey];
+        state.payroll = JSON.parse(JSON.stringify(source.payroll));
+        state.percentages = JSON.parse(JSON.stringify(source.percentages));
+
+        document.getElementById('pay-basic-salary').value = state.payroll.basic || "";
+        document.getElementById('sl-needs').value = state.percentages.needs || 0;
+        document.getElementById('sl-wants').value = state.percentages.wants || 0;
+        document.getElementById('sl-savings').value = state.percentages.savings || 0;
+        
+        document.getElementById('allowances-container').innerHTML = '';
+        state.payroll.allowances.forEach(a => addPayrollRow('allowance', a.name, a.value));
+        
+        document.getElementById('deductions-container').innerHTML = '';
+        state.payroll.deductions.forEach(d => addPayrollRow('deduction', d.name, d.value));
+
+        calculatePayrollNettOutput(true);
+        updateSliderLabels();
+        alert(`Successfully synchronized structural payroll matrix inputs from ${targetKey}!`);
     }
 
     function bootStateEngine() {
