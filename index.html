@@ -145,7 +145,6 @@
             margin-bottom: 14px;
         }
 
-        /* PAGE QUICK GUIDES SYSTEM */
         .guide-box {
             background: rgba(0, 122, 255, 0.05);
             border: 1px dashed var(--color-needs);
@@ -247,7 +246,9 @@
         #sync-status { font-size: 12px; font-weight: 600; color: var(--text-muted); text-align: center; margin-top: 4px; }
 
         .alert-bg-bar { background-color: var(--color-alert) !important; }
+        .warning-bg-bar { background-color: var(--color-wants) !important; }
         .alert-text-color { color: var(--color-alert) !important; }
+        .warning-text-color { color: var(--color-wants) !important; }
         .c-needs { color: var(--color-needs); }
         .c-wants { color: var(--color-wants); }
         .c-savings { color: var(--color-savings); }
@@ -301,8 +302,7 @@
             <div class="month-selector-wrapper">
                 <button class="btn-minor" style="padding: 4px 10px; font-size: 11px;" onclick="triggerCloudSync()">☁️ Sync</button>
                 <select id="month-navigation-dropdown" class="month-dropdown" onchange="executeMonthNavigationShift()">
-                    <!-- Loaded dynamically -->
-                </select>
+                    </select>
             </div>
             <button class="profile-btn" onclick="toggleModal('profile-modal', true)">👤</button>
         </div>
@@ -311,7 +311,6 @@
     <div id="sync-status">Ready</div>
 
     <div class="main-container">
-        <!-- ONBOARDING TUTORIAL -->
         <div id="new-user-walkthrough-panel" class="card" style="display: none; border-top: 4px solid var(--color-savings);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                 <h3 style="margin:0; font-size:16px; font-weight:800;">👋 Welcome to Finagement Pro!</h3>
@@ -328,7 +327,6 @@
             </div>
         </div>
 
-        <!-- PAGE 1: OVERVIEW -->
         <div id="page-overview" class="app-view active">
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
@@ -373,7 +371,7 @@
             <button class="btn btn-action" onclick="toggleModal('expense-modal', true)">📝 Add Daily Expense</button>
 
             <div id="alert-warning-card" class="card card-alert-header" style="display: none; margin-top: 16px;">
-                <div class="card-title">⚠️ Over Budget Warning!</div>
+                <div class="card-title" id="alert-box-main-title">⚠️ Threshold Alerts &amp; Discrepancies</div>
                 <div id="alert-items-hook"></div>
             </div>
 
@@ -383,7 +381,6 @@
             </div>
         </div>
 
-        <!-- PAGE 2: EARNING PAGE -->
         <div id="page-earning" class="app-view">
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
@@ -395,7 +392,7 @@
                     <ul>
                         <li>Input your Base Salary and inject dynamic custom rows for items like allowances or statutory deductions (EPF/SOCSO).</li>
                         <li>The system automatically computes your true <strong>Nett Take-Home Pay</strong>.</li>
-                        <li>Use the balanced target sliders to distribute this exact income baseline across Needs, Wants, and Savings framework limits.</li>
+                        <li>Toggle between <strong>Slider Mode</strong> or <strong>Manual Exact RM Input Mode</strong> to distribute targets. If the numbers don't perfectly equal your Nett Pay, a real-time warning tracker will display the unallocated mismatch balance.</li>
                     </ul>
                 </div>
             </div>
@@ -429,24 +426,46 @@
             </div>
 
             <div class="card">
-                <div class="card-title">Adjust Core Allocation Target Ratios</div>
-                <p style="font-size:12px; color:var(--text-muted); margin-top:-8px; margin-bottom:16px;">Distribute your derived Nett Take-Home Pay across your framework buckets.</p>
-                <div class="input-group">
-                    <div class="slider-meta-row c-needs"><span>Needs Target Limit:</span><span id="v-pct-needs">0% (0.00 RM)</span></div>
-                    <input type="range" id="sl-needs" min="0" max="100" value="0" oninput="balanceRatios('needs')">
+                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span>Adjust Core Allocation Targets</span>
+                    <button id="btn-toggle-ratio-mode" class="btn-minor" onclick="toggleRatioInputMode()">⌨️ Switch to Manual RM Input</button>
                 </div>
-                <div class="input-group">
-                    <div class="slider-meta-row c-wants"><span>Wants Target Limit:</span><span id="v-pct-wants">0% (0.00 RM)</span></div>
-                    <input type="range" id="sl-wants" min="0" max="100" value="0" oninput="balanceRatios('wants')">
+                <p style="font-size:12px; color:var(--text-muted); margin-top:-4px; margin-bottom:16px;">Map how your take-home pays out across framework metrics.</p>
+                
+                <div id="allocation-discrepancy-banner" style="display:none; padding:10px; border-radius:8px; font-size:13px; font-weight:700; margin-bottom:16px; text-align:center;"></div>
+
+                <div id="ratio-sliders-container">
+                    <div class="input-group">
+                        <div class="slider-meta-row c-needs"><span>Needs Target Limit:</span><span id="v-pct-needs">0% (0.00 RM)</span></div>
+                        <input type="range" id="sl-needs" min="0" max="100" value="0" oninput="balanceRatios('needs')">
+                    </div>
+                    <div class="input-group">
+                        <div class="slider-meta-row c-wants"><span>Wants Target Limit:</span><span id="v-pct-wants">0% (0.00 RM)</span></div>
+                        <input type="range" id="sl-wants" min="0" max="100" value="0" oninput="balanceRatios('wants')">
+                    </div>
+                    <div class="input-group">
+                        <div class="slider-meta-row c-savings"><span>Savings Allocation Target:</span><span id="v-pct-savings">0% (0.00 RM)</span></div>
+                        <input type="range" id="sl-savings" min="0" max="100" value="0" oninput="balanceRatios('savings')">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <div class="slider-meta-row c-savings"><span>Savings Allocation Target:</span><span id="v-pct-savings">0% (0.00 RM)</span></div>
-                    <input type="range" id="sl-savings" min="0" max="100" value="0" oninput="balanceRatios('savings')">
+
+                <div id="ratio-manual-container" style="display:none;">
+                    <div class="input-group">
+                        <label class="c-needs" style="font-weight:700;">Needs Exact Budget Value (RM)</label>
+                        <input type="number" id="num-exact-needs" placeholder="0.00" step="0.01" oninput="processManualRatioInputs()">
+                    </div>
+                    <div class="input-group">
+                        <label class="c-wants" style="font-weight:700;">Wants Exact Budget Value (RM)</label>
+                        <input type="number" id="num-exact-wants" placeholder="0.00" step="0.01" oninput="processManualRatioInputs()">
+                    </div>
+                    <div class="input-group">
+                        <label class="c-savings" style="font-weight:700;">Savings Exact Budget Value (RM)</label>
+                        <input type="number" id="num-exact-savings" placeholder="0.00" step="0.01" oninput="processManualRatioInputs()">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- PAGE 3: EXPENSES -->
         <div id="page-expenses" class="app-view">
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
@@ -458,7 +477,7 @@
                     <ul>
                         <li>Build operational tracking category rows under Needs, Wants, or Savings (e.g., Petrol, Groceries).</li>
                         <li>Assign fixed limits to establish an outbound tracking boundary ledger.</li>
-                        <li>The framework details table dynamically updates to monitor actual daily spending inputs vs your target allotment parameters.</li>
+                        <li><strong>Custom Percentage Alerts:</strong> Set an optional usage milestone trigger (e.g., 50%). Finagement flags a warning on the dashboard the instant spending clears that precise marker, before it actually triggers a hard over-budget state.</li>
                     </ul>
                 </div>
             </div>
@@ -485,6 +504,16 @@
                     <label>Target Allotted Monthly Cap (RM)</label>
                     <input type="number" id="cfg-item-cap" placeholder="500">
                 </div>
+                
+                <div class="input-group" style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span>⚠️ Custom Warning Threshold Milestone</span>
+                        <span id="cfg-warning-label" style="color: var(--color-wants); font-weight: 700;">Disabled (100%)</span>
+                    </label>
+                    <input type="range" id="cfg-warning-pct" min="10" max="100" value="100" step="5" oninput="updateFormWarningLabel()">
+                    <p style="font-size:11px; color:var(--text-muted); margin: 6px 0 0 0;">Triggers an early status alert when spending reaches this ratio of total capacity.</p>
+                </div>
+
                 <div style="display: flex; gap: 8px;">
                     <button class="btn btn-primary" style="flex: 2;" onclick="commitCustomBudgetItem()">Save Preset Item</button>
                     <button id="btn-cancel-budget-edit" class="btn" style="flex: 1; background: var(--border-color); color: var(--text-main); display: none;" onclick="clearBudgetForm()">Cancel</button>
@@ -515,7 +544,6 @@
             </div>
         </div>
 
-        <!-- PAGE 4: DEBT TRACKER -->
         <div id="page-debts" class="app-view">
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
@@ -577,7 +605,6 @@
     <button class="nav-tab" onclick="navigatePage('debts', this)"><span class="nav-icon">💳</span><span>Debts</span></button>
 </nav>
 
-<!-- MODALS -->
 <div id="expense-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -616,7 +643,6 @@
 </div>
 
 <script>
-    // PASTE YOUR SHEET URL LINK MATRIX HERE
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycby9KGTCcnCQM4LN-R4uAAYWcWcA05fggTm5DVhfoAH9jvn39ZVHFygmfFfPIqgDbgKvog/exec";
 
     let activeUserCreds = { username: "", password: "" };
@@ -627,15 +653,13 @@
     let currentMonthKey = `${monthsArray[activeMonthNum - 1]} ${activeYear}`;
 
     let localEngine = { months: {}, debts: [], hasSeenTutorial: false };
+    
+    // Core Allocation Input Mode State Manager ("slider" vs "manual")
+    let currentRatioInputMode = "slider";
 
-    // Toggle functional display logic for guides
     function toggleGuideBlock(guideId) {
         const target = document.getElementById(guideId);
-        if(target.style.display === "none") {
-            target.style.display = "block";
-        } else {
-            target.style.display = "none";
-        }
+        target.style.display = (target.style.display === "none") ? "block" : "none";
     }
 
     function toggleAuthForms(toSignUp) {
@@ -801,6 +825,10 @@
         if(!localEngine.months[key].payroll) {
             localEngine.months[key].payroll = { basic: localEngine.months[key].income || 0, allowances: [], deductions: [] };
         }
+        // Backward compatibility parsing for manual direct inputs vs legacy profiles
+        if(localEngine.months[key].inputMode) {
+            currentRatioInputMode = localEngine.months[key].inputMode;
+        }
     }
 
     function buildGlobalMonthNavigationDropdown() {
@@ -824,6 +852,14 @@
         document.getElementById('sl-wants').value = state.percentages.wants || 0;
         document.getElementById('sl-savings').value = state.percentages.savings || 0;
         
+        // Restore manual view input states if present
+        document.getElementById('num-exact-needs').value = state.manualAllocations?.needs || "";
+        document.getElementById('num-exact-wants').value = state.manualAllocations?.wants || "";
+        document.getElementById('num-exact-savings').value = state.manualAllocations?.savings || "";
+
+        currentRatioInputMode = state.inputMode || "slider";
+        enforceRatioUIVisualState();
+
         document.getElementById('allowances-container').innerHTML = '';
         state.payroll.allowances.forEach(a => addPayrollRow('allowance', a.name, a.value));
         
@@ -885,11 +921,15 @@
 
         document.getElementById('computed-nett-label').textContent = derivedNettPay.toLocaleString('en-US', {minimumFractionDigits:2}) + ' RM';
         
-        updateSliderLabels();
-        if(shouldSaveToDatabase) commitDatabase();
+        if (currentRatioInputMode === "manual") {
+            processManualRatioInputs(shouldSaveToDatabase);
+        } else {
+            updateSliderLabels();
+            calculateUnallocatedDrift();
+            if(shouldSaveToDatabase) commitDatabase();
+        }
     }
 
-    // COPY PREVIOUS MONTH PAYROLL DATA INTERFACE
     function triggerManualPreviousMonthPayrollCopy() {
         const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); 
         if(currentMonthIdx <= 0) return alert("No history profile framework detected for previous periods.");
@@ -906,20 +946,22 @@
         const state = localEngine.months[currentMonthKey];
         state.payroll = JSON.parse(JSON.stringify(source.payroll));
         state.percentages = JSON.parse(JSON.stringify(source.percentages));
+        state.manualAllocations = JSON.parse(JSON.stringify(source.manualAllocations || {needs:0, wants:0, savings:0}));
+        state.inputMode = source.inputMode || "slider";
+        
+        currentRatioInputMode = state.inputMode;
+        enforceRatioUIVisualState();
 
         document.getElementById('pay-basic-salary').value = state.payroll.basic || "";
         document.getElementById('sl-needs').value = state.percentages.needs || 0;
         document.getElementById('sl-wants').value = state.percentages.wants || 0;
         document.getElementById('sl-savings').value = state.percentages.savings || 0;
         
-        document.getElementById('allowances-container').innerHTML = '';
-        state.payroll.allowances.forEach(a => addPayrollRow('allowance', a.name, a.value));
-        
-        document.getElementById('deductions-container').innerHTML = '';
-        state.payroll.deductions.forEach(d => addPayrollRow('deduction', d.name, d.value));
+        document.getElementById('num-exact-needs').value = state.manualAllocations.needs || "";
+        document.getElementById('num-exact-wants').value = state.manualAllocations.wants || "";
+        document.getElementById('num-exact-savings').value = state.manualAllocations.savings || "";
 
         calculatePayrollNettOutput(true);
-        updateSliderLabels();
         alert(`Successfully synchronized structural payroll matrix inputs from ${targetKey}!`);
     }
 
@@ -944,7 +986,7 @@
         navButton.classList.add('active');
         if (targetId === 'overview') renderDashboardView();
         if (targetId === 'expenses') { renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); }
-        if (targetId === 'earning') updateSliderLabels();
+        if (targetId === 'earning') { updateSliderLabels(); calculateUnallocatedDrift(); }
         if (targetId === 'debts') renderDebtTrackerLedger();
     }
 
@@ -985,6 +1027,7 @@
         });
     }
 
+    /* CORE DASHBOARD RENDERER & LOGIC ENGINE OVERHAUL */
     function renderDashboardView() {
         recalculateDebtPaymentsFromLogFeeds();
         const state = localEngine.months[currentMonthKey];
@@ -996,23 +1039,77 @@
         document.getElementById('lbl-inc-base').textContent = state.income.toLocaleString('en-US', {minimumFractionDigits: 2});
         document.getElementById('lbl-spent-base').textContent = totalDisbursed.toLocaleString('en-US', {minimumFractionDigits: 2});
         
-        document.getElementById('macro-needs').textContent = (state.income * (state.percentages.needs / 100)).toFixed(0) + ' RM';
-        document.getElementById('macro-wants').textContent = (state.income * (state.percentages.wants / 100)).toFixed(0) + ' RM';
-        document.getElementById('macro-savings').textContent = (state.income * (state.percentages.savings / 100)).toFixed(0) + ' RM';
+        // Calculate dynamic Pool sizes based on input mode state rules
+        let poolNeeds = 0, poolWants = 0, poolSavings = 0;
+        if(state.inputMode === "manual" && state.manualAllocations) {
+            poolNeeds = state.manualAllocations.needs || 0;
+            poolWants = state.manualAllocations.wants || 0;
+            poolSavings = state.manualAllocations.savings || 0;
+        } else {
+            poolNeeds = state.income * ((state.percentages?.needs || 0) / 100);
+            poolWants = state.income * ((state.percentages?.wants || 0) / 100);
+            poolSavings = state.income * ((state.percentages?.savings || 0) / 100);
+        }
+
+        document.getElementById('macro-needs').textContent = poolNeeds.toFixed(0) + ' RM';
+        document.getElementById('macro-wants').textContent = poolWants.toFixed(0) + ' RM';
+        document.getElementById('macro-savings').textContent = poolSavings.toFixed(0) + ' RM';
 
         const alertCardElement = document.getElementById('alert-warning-card');
         const alertItemsHook = document.getElementById('alert-items-hook');
-        alertItemsHook.innerHTML = ''; let triggerAlertFlag = false;
+        alertItemsHook.innerHTML = ''; 
+        let triggerAlertFlag = false;
 
+        // Check if there is an exact input currency allocation deviation mismatch
+        let calculatedDrift = state.income - (poolNeeds + poolWants + poolSavings);
+        if (Math.abs(calculatedDrift) >= 0.01) {
+            triggerAlertFlag = true;
+            let wrapper = document.createElement('div');
+            wrapper.className = 'budget-progress-item';
+            wrapper.style.borderBottom = '1px dashed rgba(0,0,0,0.1)';
+            wrapper.style.paddingBottom = '10px';
+            wrapper.innerHTML = `
+                <div class="progress-meta warning-text-color">
+                    <span class="u-bold">⚠️ Core Allocation Discrepancy</span>
+                    <span>${calculatedDrift > 0 ? 'Unallocated' : 'Overallocated'}: ${Math.abs(calculatedDrift).toFixed(2)} RM</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-muted);">Your distributed buckets do not equal your Take-Home Pay. Fix this inside the Earning terminal.</div>
+            `;
+            alertItemsHook.appendChild(wrapper);
+        }
+
+        // Loop through item profiles to map soft warning limits alongside hard limits
         state.budgets.forEach(b => {
             const expenseSpent = itemSpendingAccumulator[b.name] || 0;
+            const customWarnPct = b.warningPct !== undefined ? b.warningPct : 100;
+            const structuralThresholdValue = b.cap * (customWarnPct / 100);
+
             if (expenseSpent > b.cap) {
-                triggerAlertFlag = true; const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
-                let wrapper = document.createElement('div'); wrapper.className = 'budget-progress-item';
-                wrapper.innerHTML = `<div class="progress-meta alert-text-color"><span>${b.name} <small style="color:var(--text-muted); font-weight:500;">(${b.group})</small></span><span>Over limit by ${(expenseSpent - b.cap).toFixed(2)} RM</span></div><div class="progress-bar"><div class="progress-fill alert-bg-bar" style="width: ${utilizationPct}%;"></div></div>`;
+                // Hard over-budget alert status logic trigger
+                triggerAlertFlag = true; 
+                const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
+                let wrapper = document.createElement('div'); 
+                wrapper.className = 'budget-progress-item';
+                wrapper.innerHTML = `<div class="progress-meta alert-text-color"><span>🚨 ${b.name} <small style="color:var(--text-muted); font-weight:500;">(${b.group})</small></span><span>Over limit by ${(expenseSpent - b.cap).toFixed(2)} RM</span></div><div class="progress-bar"><div class="progress-fill alert-bg-bar" style="width: ${utilizationPct}%;"></div></div>`;
+                alertItemsHook.appendChild(wrapper);
+            } 
+            else if (customWarnPct < 100 && expenseSpent >= structuralThresholdValue && expenseSpent > 0) {
+                // Soft custom warning alert framework trigger
+                triggerAlertFlag = true;
+                const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
+                let wrapper = document.createElement('div');
+                wrapper.className = 'budget-progress-item';
+                wrapper.innerHTML = `
+                    <div class="progress-meta warning-text-color">
+                        <span>⚠️ ${b.name} <small style="color:var(--text-muted); font-weight:500;">(${b.group})</small></span>
+                        <span>Cleared ${customWarnPct}% Milestone (${expenseSpent.toFixed(2)} / ${b.cap.toFixed(0)} RM)</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill warning-bg-bar" style="width: ${utilizationPct}%;"></div></div>
+                `;
                 alertItemsHook.appendChild(wrapper);
             }
         });
+        
         alertCardElement.style.display = triggerAlertFlag ? 'block' : 'none';
 
         const logsHook = document.getElementById('overview-logs-hook'); logsHook.innerHTML = '';
@@ -1038,6 +1135,99 @@
     }
 
     function purgeExpenseLogItem(id) { localEngine.months[currentMonthKey].expenses = localEngine.months[currentMonthKey].expenses.filter(e => e.id !== id); commitDatabase(); renderDashboardView(); }
+
+    // DUAL-MODE CONTROLLER FOR INTERACTIVE PERCENTAGE VS EXACT RM VALUES
+    function toggleRatioInputMode() {
+        currentRatioInputMode = (currentRatioInputMode === "slider") ? "manual" : "slider";
+        localEngine.months[currentMonthKey].inputMode = currentRatioInputMode;
+        
+        enforceRatioUIVisualState();
+        
+        if (currentRatioInputMode === "manual") {
+            const state = localEngine.months[currentMonthKey];
+            if(!state.manualAllocations) {
+                state.manualAllocations = {
+                    needs: parseFloat((state.income * (state.percentages.needs / 100)).toFixed(2)) || 0,
+                    wants: parseFloat((state.income * (state.percentages.wants / 100)).toFixed(2)) || 0,
+                    savings: parseFloat((state.income * (state.percentages.savings / 100)).toFixed(2)) || 0
+                };
+            }
+            document.getElementById('num-exact-needs').value = state.manualAllocations.needs || "";
+            document.getElementById('num-exact-wants').value = state.manualAllocations.wants || "";
+            document.getElementById('num-exact-savings').value = state.manualAllocations.savings || "";
+            processManualRatioInputs(true);
+        } else {
+            updateSliderLabels();
+            calculateUnallocatedDrift();
+            commitDatabase();
+        }
+    }
+
+    function enforceRatioUIVisualState() {
+        const sliderBox = document.getElementById('ratio-sliders-container');
+        const manualBox = document.getElementById('ratio-manual-container');
+        const toggleBtn = document.getElementById('btn-toggle-ratio-mode');
+
+        if (currentRatioInputMode === "manual") {
+            sliderBox.style.display = "none";
+            manualBox.style.display = "block";
+            toggleBtn.textContent = "🎛️ Switch to Slider Mode";
+        } else {
+            sliderBox.style.display = "block";
+            manualBox.style.display = "none";
+            toggleBtn.textContent = "⌨️ Switch to Manual RM Input";
+        }
+    }
+
+    function processManualRatioInputs(shouldSave = true) {
+        const state = localEngine.months[currentMonthKey];
+        const nVal = parseFloat(document.getElementById('num-exact-needs').value) || 0;
+        const wVal = parseFloat(document.getElementById('num-exact-wants').value) || 0;
+        const sVal = parseFloat(document.getElementById('num-exact-savings').value) || 0;
+
+        if(!state.manualAllocations) state.manualAllocations = {};
+        state.manualAllocations.needs = nVal;
+        state.manualAllocations.wants = wVal;
+        state.manualAllocations.savings = sVal;
+
+        // Compute underlying absolute ratios to match structural legacy logic
+        if (state.income > 0) {
+            state.percentages.needs = Math.round((nVal / state.income) * 100);
+            state.percentages.wants = Math.round((wVal / state.income) * 100);
+            state.percentages.savings = Math.round((sVal / state.income) * 100);
+        }
+
+        calculateUnallocatedDrift();
+        if(shouldSave) commitDatabase();
+    }
+
+    function calculateUnallocatedDrift() {
+        const state = localEngine.months[currentMonthKey];
+        const banner = document.getElementById('allocation-discrepancy-banner');
+        
+        let allocatedAmount = 0;
+        if (currentRatioInputMode === "manual") {
+            allocatedAmount = (state.manualAllocations?.needs || 0) + (state.manualAllocations?.wants || 0) + (state.manualAllocations?.savings || 0);
+        } else {
+            allocatedAmount = (state.income * ((state.percentages?.needs || 0) / 100)) + (state.income * ((state.percentages?.wants || 0) / 100)) + (state.income * ((state.percentages?.savings || 0) / 100));
+        }
+
+        let dynamicDrift = state.income - allocatedAmount;
+
+        if (Math.abs(dynamicDrift) < 0.01) {
+            banner.style.display = "none";
+        } else if (dynamicDrift > 0) {
+            banner.style.display = "block";
+            banner.style.backgroundColor = "rgba(0, 122, 255, 0.1)";
+            banner.style.color = "var(--color-needs)";
+            banner.textContent = `📋 Remaining Unallocated: ${dynamicDrift.toFixed(2)} RM`;
+        } else {
+            banner.style.display = "block";
+            banner.style.backgroundColor = "rgba(255, 59, 48, 0.1)";
+            banner.style.color = "var(--color-alert)";
+            banner.textContent = `⚠️ Warning: Overallocated by ${Math.abs(dynamicDrift).toFixed(2)} RM`;
+        }
+    }
 
     function updateSliderLabels() {
         const incomeBase = localEngine.months[currentMonthKey].income;
@@ -1071,30 +1261,76 @@
         localEngine.months[currentMonthKey].percentages.needs = parseInt(document.getElementById('sl-needs').value);
         localEngine.months[currentMonthKey].percentages.wants = parseInt(document.getElementById('sl-wants').value);
         localEngine.months[currentMonthKey].percentages.savings = parseInt(document.getElementById('sl-savings').value);
+        calculateUnallocatedDrift();
         commitDatabase();
     }
 
+    // SLIDER UI BINDER METHOD FOR FORM PRESETS
+    function updateFormWarningLabel() {
+        const sliderValue = parseInt(document.getElementById('cfg-warning-pct').value);
+        const displayLabel = document.getElementById('cfg-warning-label');
+        if (sliderValue === 100) {
+            displayLabel.textContent = "Disabled (100%)";
+            displayLabel.style.color = "var(--text-muted)";
+        } else {
+            displayLabel.textContent = `Active at ${sliderValue}%`;
+            displayLabel.style.color = "var(--color-wants)";
+        }
+    }
+
     function commitCustomBudgetItem() {
-        const group = document.getElementById('cfg-item-group').value; const name = document.getElementById('cfg-item-name').value.trim(); const cap = parseFloat(document.getElementById('cfg-item-cap').value); const idx = parseInt(document.getElementById('cfg-editing-index').value);
+        const group = document.getElementById('cfg-item-group').value; 
+        const name = document.getElementById('cfg-item-name').value.trim(); 
+        const cap = parseFloat(document.getElementById('cfg-item-cap').value); 
+        const warningPctValue = parseInt(document.getElementById('cfg-warning-pct').value);
+        const idx = parseInt(document.getElementById('cfg-editing-index').value);
+        
         if(!name || isNaN(cap) || cap <= 0) return alert("Verify target parameters validation constraints rules.");
         let col = localEngine.months[currentMonthKey].budgets;
+        
         if (idx >= 0) {
             const histName = col[idx].name;
-            if (histName.toLowerCase() !== name.toLowerCase()) { localEngine.months[currentMonthKey].expenses.forEach(e => { if (e.item.toLowerCase() === histName.toLowerCase()) { e.item = name; e.group = group; } }); }
-            col[idx] = { group, name, cap };
+            if (histName.toLowerCase() !== name.toLowerCase()) { 
+                localEngine.months[currentMonthKey].expenses.forEach(e => { if (e.item.toLowerCase() === histName.toLowerCase()) { e.item = name; e.group = group; } }); 
+            }
+            col[idx] = { group, name, cap, warningPct: warningPctValue };
         } else {
-            let match = col.find(i => i.name.toLowerCase() === name.toLowerCase()); if (match) { match.group = group; match.cap = cap; } else { col.push({ group, name, cap }); }
+            let match = col.find(i => i.name.toLowerCase() === name.toLowerCase()); 
+            if (match) { 
+                match.group = group; match.cap = cap; match.warningPct = warningPctValue;
+            } else { 
+                col.push({ group, name, cap, warningPct: warningPctValue }); 
+            }
         }
         commitDatabase(); renderExpenseDetailsTable(); clearBudgetForm();
     }
 
     function loadBudgetEditPreset(index) {
         const target = localEngine.months[currentMonthKey].budgets[index];
-        document.getElementById('cfg-editing-index').value = index; document.getElementById('cfg-item-group').value = target.group; document.getElementById('cfg-item-name').value = target.name; document.getElementById('cfg-item-cap').value = target.cap;
-        document.getElementById('budget-form-heading').textContent = "✏️ Editing: " + target.name; document.getElementById('btn-cancel-budget-edit').style.display = "block"; document.getElementById('cfg-item-name').focus();
+        document.getElementById('cfg-editing-index').value = index; 
+        document.getElementById('cfg-item-group').value = target.group; 
+        document.getElementById('cfg-item-name').value = target.name; 
+        document.getElementById('cfg-item-cap').value = target.cap;
+        
+        // Restore custom percentage alert parameters to slider module
+        const warningConfigVal = target.warningPct !== undefined ? target.warningPct : 100;
+        document.getElementById('cfg-warning-pct').value = warningConfigVal;
+        updateFormWarningLabel();
+        
+        document.getElementById('budget-form-heading').textContent = "✏️ Editing: " + target.name; 
+        document.getElementById('btn-cancel-budget-edit').style.display = "block"; 
+        document.getElementById('cfg-item-name').focus();
     }
 
-    function clearBudgetForm() { document.getElementById('cfg-editing-index').value = "-1"; document.getElementById('cfg-item-name').value = ""; document.getElementById('cfg-item-cap').value = ""; document.getElementById('budget-form-heading').textContent = "Create / Update Target Allocations"; document.getElementById('btn-cancel-budget-edit').style.display = "none"; }
+    function clearBudgetForm() { 
+        document.getElementById('cfg-editing-index').value = "-1"; 
+        document.getElementById('cfg-item-name').value = ""; 
+        document.getElementById('cfg-item-cap').value = ""; 
+        document.getElementById('cfg-warning-pct').value = 100;
+        updateFormWarningLabel();
+        document.getElementById('budget-form-heading').textContent = "Create / Update Target Allocations"; 
+        document.getElementById('btn-cancel-budget-edit').style.display = "none"; 
+    }
 
     function triggerManualPreviousMonthCopy() {
         const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); if(currentMonthIdx <= 0) return alert("No history structure discovered.");
@@ -1114,7 +1350,11 @@
         filtered.forEach((b) => {
             const trueIdx = state.budgets.findIndex(orig => orig.name === b.name); const actual = itemSpent[b.name] || 0;
             let tableRow = document.createElement('tr'); if (actual > b.cap) tableRow.className = 'alert-text-color';
-            tableRow.innerHTML = `<td class="row-name">${b.name}</td><td>${b.group}</td><td class="row-budget">${b.cap.toFixed(2)} RM</td><td class="row-actual ${actual > b.cap ? 'alert-text-color' : ''}">${actual.toFixed(2)} RM</td><td class="align-right"><button class="btn-inline-edit" onclick="loadBudgetEditPreset(${trueIdx})">Edit</button><button class="btn-trash" onclick="purgeBudgetItemPreset(${trueIdx})">✕</button></td>`;
+            
+            // Appends a small visual tag indicator next to items running soft warnings
+            const pctTag = (b.warningPct && b.warningPct < 100) ? ` <small style="color:var(--color-wants); font-weight:bold;">[>${b.warningPct}% Alert]</small>` : '';
+            
+            tableRow.innerHTML = `<td class="row-name">${b.name}${pctTag}</td><td>${b.group}</td><td class="row-budget">${b.cap.toFixed(2)} RM</td><td class="row-actual ${actual > b.cap ? 'alert-text-color' : ''}">${actual.toFixed(2)} RM</td><td class="align-right"><button class="btn-inline-edit" onclick="loadBudgetEditPreset(${trueIdx})">Edit</button><button class="btn-trash" onclick="purgeBudgetItemPreset(${trueIdx})">✕</button></td>`;
             tableBody.appendChild(tableRow);
         });
     }
@@ -1139,7 +1379,7 @@
         } else { localEngine.debts.push({ name: label, total: principal, paid: 0, targetInstallment: targetInst, connectToBudget: connect }); }
         if (connect) {
             let exists = localEngine.months[currentMonthKey].budgets.some(b => b.name.toLowerCase() === label.toLowerCase());
-            if (!exists) { localEngine.months[currentMonthKey].budgets.push({ group: "Needs", name: label, cap: targetInst }); } 
+            if (!exists) { localEngine.months[currentMonthKey].budgets.push({ group: "Needs", name: label, cap: targetInst, warningPct: 100 }); } 
             else { let curr = localEngine.months[currentMonthKey].budgets.find(b => b.name.toLowerCase() === label.toLowerCase()); curr.cap = targetInst; }
         }
         commitDatabase(); renderDebtTrackerLedger(); clearDebtForm();
