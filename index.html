@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finagement Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
             --bg-primary: #F2F4F7;
@@ -173,14 +172,22 @@
         .card-alert-header { background-color: rgba(255, 59, 48, 0.1); border: 1px solid var(--color-alert); }
         .card-alert-header .card-title { color: var(--color-alert); }
 
-        /* ANALYTICS CONTAINER GRAPH STYLING */
-        .chart-box-wrapper {
-            min-height: 220px;
-            margin: 10px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* VINTAGE TEXT-BASED SUMMARY BLOCKS GRID */
+        .macro-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 14px 0;
         }
+        .macro-block {
+            background: var(--bg-primary);
+            padding: 12px 8px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .macro-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .macro-val { font-size: 13px; font-weight: 800; }
 
         .budget-progress-item { margin-bottom: 16px; }
         .budget-progress-item:last-child { margin-bottom: 0; }
@@ -331,8 +338,8 @@
                 <div style="font-size:12px; color:var(--text-muted);">Create dynamic trackers under <strong>Expenses</strong>. Check the "Recurring" flag to auto-migrate monthly utility commitments.</div>
             </div>
             <div class="tutorial-box">
-                <div class="tutorial-title">🎯 Step 3: Establish Savings Milestone Goals</div>
-                <div style="font-size:12px; color:var(--text-muted);">Lock away chunks of your Savings pool into long-term tracking metrics directly from the Expenses tab.</div>
+                <div class="tutorial-title">🎯 Step 3: Map Out Savings Milestones</div>
+                <div style="font-size:12px; color:var(--text-muted);">Track your progress toward long-term asset targets or emergency reserves on the brand new <strong>Savings</strong> tab.</div>
             </div>
         </div>
 
@@ -346,7 +353,7 @@
                     <strong>📱 Dashboard Analytics:</strong>
                     <ul>
                         <li><strong>Unspent Balance:</strong> Funds remaining from Nett Pay after all logged transaction expenditures.</li>
-                        <li><strong>Interactive Chart:</strong> Displays current financial pool values. Tap or hover over nodes for precise readouts.</li>
+                        <li><strong>Macro Budgets:</strong> Real-time text trackers detailing available funds left inside individual macro spaces.</li>
                     </ul>
                 </div>
             </div>
@@ -358,8 +365,19 @@
                     <span style="font-size: 28px; font-weight: 800;" id="main-real-balance">0.00 RM</span>
                 </div>
                 
-                <div class="chart-box-wrapper">
-                    <div id="overview-donut-chart"></div>
+                <div class="macro-grid">
+                    <div class="macro-block" style="border-top: 3px solid var(--color-needs);">
+                        <div class="macro-label">Needs Pool</div>
+                        <div class="macro-val c-needs" id="lbl-pool-needs">0.00 RM</div>
+                    </div>
+                    <div class="macro-block" style="border-top: 3px solid var(--color-wants);">
+                        <div class="macro-label">Wants Pool</div>
+                        <div class="macro-val c-wants" id="lbl-pool-wants">0.00 RM</div>
+                    </div>
+                    <div class="macro-block" style="border-top: 3px solid var(--color-savings);">
+                        <div class="macro-label">Savings Pool</div>
+                        <div class="macro-val c-savings" id="lbl-pool-savings">0.00 RM</div>
+                    </div>
                 </div>
 
                 <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; border-top:1px dashed var(--border-color); padding-top:10px;">
@@ -467,14 +485,14 @@
         <div id="page-expenses" class="app-view">
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
-                    Expenses &amp; Goals Guide
+                    Expenses Guide
                     <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-expenses-box')">Help</button>
                 </div>
                 <div id="guide-expenses-box" class="guide-box">
-                    <strong>⚙️ Budgets, Recurring Bills, &amp; Long-term Milestones:</strong>
+                    <strong>⚙️ Budgets &amp; Recurring Subscriptions:</strong>
                     <ul>
                         <li><strong>Recurring Checkbox:</strong> Marks tracking rules to persist automatically across subsequent monthly rolls.</li>
-                        <li><strong>Savings Goals Engine:</strong> Create milestones (e.g., Emergency Fund) that pull funds incrementally from your monthly macro savings allocation.</li>
+                        <li><strong>Threshold Monitors:</strong> Set percentage checks to catch high velocity expenditures.</li>
                     </ul>
                 </div>
             </div>
@@ -523,20 +541,6 @@
                 </div>
             </div>
 
-            <div class="card" style="border-left: 4px solid var(--color-savings);">
-                <div class="card-title">🎯 Dedicated Long-Term Savings Goals</div>
-                
-                <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 10px; margin-bottom: 14px; border: 1px solid var(--border-color);">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-                        <input type="text" id="goal-input-name" placeholder="Goal (e.g., Workspace Upgrade)">
-                        <input type="number" id="goal-input-target" placeholder="Target Amount (RM)">
-                    </div>
-                    <button class="btn btn-minor" style="width:100%; border-radius:8px;" onclick="commitLongTermSavingsGoal()">Create Long-Term Savings Goal</button>
-                </div>
-                
-                <div id="savings-goals-progress-hook"></div>
-            </div>
-
             <div class="card">
                 <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                     <span>Active Allocations &amp; Budgets</span>
@@ -558,6 +562,57 @@
             <div class="card">
                 <div class="card-title">Year-to-Date Financial Performance</div>
                 <div id="annual-matrix-hook"></div>
+            </div>
+        </div>
+
+        <div id="page-savings" class="app-view">
+            <div class="card" style="padding-bottom:12px;">
+                <div class="card-title">
+                    Savings Goals Guide
+                    <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-savings-box')">Help</button>
+                </div>
+                <div id="guide-savings-box" class="guide-box">
+                    <strong>🎯 Asset &amp; Reserve Registry:</strong>
+                    <ul>
+                        <li>Set long-term savings goals and track accumulation progress benchmarks.</li>
+                        <li>Check "Auto-populate" to link a dedicated tracker row under your monthly Savings pool automatically.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="border-top: 4px solid var(--color-savings);">
+                <div id="savings-form-heading" class="card-title">Register Savings Milestone</div>
+                <input type="hidden" id="savings-editing-index" value="-1">
+                <div class="input-group">
+                    <label>Goal Designation / Name</label>
+                    <input type="text" id="save-reg-name" placeholder="e.g., Emergency Fund, Workspace Upgrade">
+                </div>
+                <div class="input-group">
+                    <label>Total Milestone Target (RM)</label>
+                    <input type="number" id="save-reg-total" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label>Monthly Target Deposit Allocation (RM)</label>
+                    <input type="number" id="save-reg-installment" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="save-connect-budget" checked>
+                        <label for="save-connect-budget">Auto-populate a tracker baseline under Savings</label>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button id="btn-submit-savings" class="btn btn-action" style="flex: 2;" onclick="commitSavingsRegistry()">Register Savings Goal</button>
+                    <button id="btn-cancel-savings-edit" class="btn" style="flex: 1; background: var(--border-color); color: var(--text-main); display: none;" onclick="clearSavingsForm()">Cancel</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="display:flex; justify-content:space-between;">
+                    <span>Total Accumulated Savings Pool</span>
+                    <span id="savings-aggregate-summary" class="u-bold c-savings">0.00 RM</span>
+                </div>
+                <div id="savings-list-hook"></div>
             </div>
         </div>
 
@@ -617,6 +672,7 @@
     <button class="nav-tab active" onclick="navigatePage('overview', this)"><span class="nav-icon">📱</span><span>Overview</span></button>
     <button class="nav-tab" onclick="navigatePage('earning', this)"><span class="nav-icon">💵</span><span>Income</span></button>
     <button class="nav-tab" onclick="navigatePage('expenses', this)"><span class="nav-icon">⚙️</span><span>Expenses</span></button>
+    <button class="nav-tab" onclick="navigatePage('savings', this)"><span class="nav-icon">🎯</span><span>Savings</span></button>
     <button class="nav-tab" onclick="navigatePage('debts', this)"><span class="nav-icon">💳</span><span>Debts</span></button>
 </nav>
 
@@ -628,8 +684,20 @@
         </div>
         <div class="input-group"><label>Transaction Date</label><input type="date" id="log-date-field"></div>
         <div class="input-group"><label>Target Budget Category Allocation</label><select id="log-preset-selector"></select></div>
-        <div class="input-group"><label>Amount Paid (RM)</label><input type="number" id="log-amount-field" placeholder="0.00" step="0.01"></div>
+        <div class="input-group"><label>Amount Paid / Transferred (RM)</label><input type="number" id="log-amount-field" placeholder="0.00" step="0.01"></div>
         <button class="btn btn-primary" onclick="submitDailyExpenseEntry()">Save Transaction Entry</button>
+    </div>
+</div>
+
+<div id="savings-deposit-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Record Savings Allocation Deposit</h3>
+            <span class="close-trigger" onclick="toggleModal('savings-deposit-modal', false)">&times;</span>
+        </div>
+        <input type="hidden" id="deposit-target-index">
+        <div class="input-group"><label>Deposit Contribution Amount (RM)</label><input type="number" id="deposit-amount-field" placeholder="0.00" step="0.01"></div>
+        <button class="btn btn-action" onclick="submitSavingsDeposit()">Execute Deposit Log</button>
     </div>
 </div>
 
@@ -667,10 +735,8 @@
     const monthsArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let currentMonthKey = `${monthsArray[activeMonthNum - 1]} ${activeYear}`;
 
-    // GLOBAL STATE DATABASE MODEL COMPATIBLE WITH HISTORICAL STRUCTURAL REGISTRIES
     let localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
     let currentRatioInputMode = "slider";
-    let apexDonutChartInstance = null;
 
     window.addEventListener('DOMContentLoaded', () => {
         const structuralCachedCreds = sessionStorage.getItem('finagement_creds');
@@ -680,6 +746,7 @@
             activeUserCreds = JSON.parse(structuralCachedCreds);
             localEngine = JSON.parse(structuralCachedEngine);
             if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
+            if (!localEngine.debts) localEngine.debts = [];
             
             document.getElementById('profile-username-lbl').textContent = activeUserCreds.username;
             document.getElementById('login-screen').style.display = "none";
@@ -712,39 +779,19 @@
             return;
         }
 
-        signupBtn.disabled = true;
-        signupBtn.textContent = "Creating profile...";
-        errElement.style.display = "none";
-
+        signupBtn.disabled = true; signupBtn.textContent = "Creating profile..."; errElement.style.display = "none";
         const baseFreshPayload = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
 
         try {
             const response = await fetch(CLOUD_API_URL, {
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify({
-                    action: "signup",
-                    username: userField,
-                    password: passField,
-                    payload: JSON.stringify(baseFreshPayload)
-                })
+                method: "POST", mode: "cors",
+                body: JSON.stringify({ action: "signup", username: userField, password: passField, payload: JSON.stringify(baseFreshPayload) })
             });
             const result = await response.json();
-            if(result.success) {
-                alert("Account created successfully! Proceeding to log in.");
-                toggleAuthForms(false);
-                document.getElementById('login-user').value = userField;
-            } else {
-                errElement.textContent = result.message || "Username profile already exists.";
-                errElement.style.display = "block";
-            }
-        } catch (err) {
-            errElement.textContent = "Network error. Connection failed.";
-            errElement.style.display = "block";
-        } finally {
-            signupBtn.disabled = false;
-            signupBtn.textContent = "Register Account";
-        }
+            if(result.success) { alert("Account created successfully! Proceeding to log in."); toggleAuthForms(false); document.getElementById('login-user').value = userField; } 
+            else { errElement.textContent = result.message || "Username profile already exists."; errElement.style.display = "block"; }
+        } catch (err) { errElement.textContent = "Network error. Connection failed."; errElement.style.display = "block"; } 
+        finally { signupBtn.disabled = false; signupBtn.textContent = "Register Account"; }
     }
 
     async function executeCloudLogin() {
@@ -753,34 +800,23 @@
         const errElement = document.getElementById('login-error');
         const loginBtn = document.getElementById('btn-login');
 
-        if(!userField || !passField) {
-            showLoginError("Enter your credentials.");
-            return;
-        }
-
-        loginBtn.disabled = true;
-        loginBtn.textContent = "Authenticating profile...";
-        errElement.style.display = "none";
+        if(!userField || !passField) { showLoginError("Enter your credentials."); return; }
+        loginBtn.disabled = true; loginBtn.textContent = "Authenticating profile..."; errElement.style.display = "none";
 
         try {
             const response = await fetch(CLOUD_API_URL, {
-                method: "POST",
-                mode: "cors",
+                method: "POST", mode: "cors",
                 body: JSON.stringify({ action: "login", username: userField, password: passField })
             });
             const result = await response.json();
 
             if(result.success) {
-                activeUserCreds.username = userField;
-                activeUserCreds.password = passField;
+                activeUserCreds.username = userField; activeUserCreds.password = passField;
                 document.getElementById('profile-username-lbl').textContent = userField;
 
-                if (result.data && result.data.trim() !== "") {
-                    localEngine = JSON.parse(result.data);
-                } else {
-                    localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
-                }
+                localEngine = (result.data && result.data.trim() !== "") ? JSON.parse(result.data) : { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
                 if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
+                if (!localEngine.debts) localEngine.debts = [];
 
                 sessionStorage.setItem('finagement_creds', JSON.stringify(activeUserCreds));
                 sessionStorage.setItem('finagement_engine', JSON.stringify(localEngine));
@@ -788,77 +824,40 @@
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('app-wrapper').style.display = "block";
                 bootStateEngine();
-            } else {
-                showLoginError(result.message || "Invalid account matching profiles.");
-            }
-        } catch (err) {
-            showLoginError("Cloud linkage execution failure loop.");
-        } finally {
-            loginBtn.disabled = false;
-            loginBtn.textContent = "Sign In";
-        }
+            } else { showLoginError(result.message || "Invalid account matching profiles."); }
+        } catch (err) { showLoginError("Cloud linkage execution failure loop."); } 
+        finally { loginBtn.disabled = false; loginBtn.textContent = "Sign In"; }
     }
 
-    function showLoginError(msg) {
-        const el = document.getElementById('login-error');
-        el.textContent = msg; el.style.display = "block";
-    }
+    function showLoginError(msg) { const el = document.getElementById('login-error'); el.textContent = msg; el.style.display = "block"; }
 
     function executeApplicationLogout() {
-        activeUserCreds = { username: "", password: "" };
-        localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
-        
-        sessionStorage.removeItem('finagement_creds');
-        sessionStorage.removeItem('finagement_engine');
-        
-        if (apexDonutChartInstance) { apexDonutChartInstance.destroy(); apexDonutChartInstance = null; }
-        
-        toggleModal('profile-modal', false);
-        document.getElementById('app-wrapper').style.display = "none";
-        document.getElementById('login-screen').style.display = "flex";
+        activeUserCreds = { username: "", password: "" }; localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
+        sessionStorage.removeItem('finagement_creds'); sessionStorage.removeItem('finagement_engine');
+        toggleModal('profile-modal', false); document.getElementById('app-wrapper').style.display = "none"; document.getElementById('login-screen').style.display = "flex";
     }
 
     function executeThemeSwitchToggle() {
         const cur = document.documentElement.getAttribute('data-theme');
-        const nxt = cur === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', nxt);
-        setTimeout(() => { if (apexDonutChartInstance) renderDashboardView(); }, 50);
+        document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+        setTimeout(() => { renderDashboardView(); }, 50);
     }
 
     async function triggerCloudSync() {
-        const statusEl = document.getElementById('sync-status');
-        statusEl.textContent = "🔄 Syncing with cloud database...";
-        statusEl.style.color = "var(--color-wants)";
-
+        const statusEl = document.getElementById('sync-status'); statusEl.textContent = "🔄 Syncing with cloud database..."; statusEl.style.color = "var(--color-wants)";
         try {
             const response = await fetch(CLOUD_API_URL, {
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify({
-                    action: "sync",
-                    username: activeUserCreds.username,
-                    password: activeUserCreds.password,
-                    payload: JSON.stringify(localEngine)
-                })
+                method: "POST", mode: "cors",
+                body: JSON.stringify({ action: "sync", username: activeUserCreds.username, password: activeUserCreds.password, payload: JSON.stringify(localEngine) })
             });
             const result = await response.json();
-            if(result.success) {
-                statusEl.textContent = "✅ Database completely secure & synced.";
-                statusEl.style.color = "var(--color-savings)";
-                sessionStorage.setItem('finagement_engine', JSON.stringify(localEngine));
-            } else {
-                statusEl.textContent = "❌ Sync mismatch: " + result.message;
-                statusEl.style.color = "var(--color-alert)";
-            }
-        } catch (e) {
-            statusEl.textContent = "❌ Network connection error.";
-            statusEl.style.color = "var(--color-alert)";
-        }
+            if(result.success) { statusEl.textContent = "✅ Database completely secure & synced."; statusEl.style.color = "var(--color-savings)"; sessionStorage.setItem('finagement_engine', JSON.stringify(localEngine)); } 
+            else { statusEl.textContent = "❌ Sync mismatch: " + result.message; statusEl.style.color = "var(--color-alert)"; }
+        } catch (e) { statusEl.textContent = "❌ Network connection error."; statusEl.style.color = "var(--color-alert)"; }
     }
 
     function initSpecificMonthSchema(key) {
         if (!localEngine.months[key]) {
-            // AUTOMATED FIXED RECURRING COMMITMENTS INGESTION PASSTHROUGH LOOP
             let inheritedBudgets = [];
             Object.keys(localEngine.months).forEach(oldKey => {
                 if (localEngine.months[oldKey].budgets) {
@@ -871,24 +870,18 @@
             });
 
             localEngine.months[key] = {
-                income: 0,
-                payroll: { basic: 0, allowances: [], deductions: [] },
-                percentages: { needs: 0, wants: 0, savings: 0 },
-                budgets: inheritedBudgets,
-                expenses: []
+                income: 0, payroll: { basic: 0, allowances: [], deductions: [] },
+                percentages: { needs: 0, wants: 0, savings: 0 }, budgets: inheritedBudgets, expenses: []
             };
         }
     }
 
     function buildGlobalMonthNavigationDropdown() {
-        const dropdown = document.getElementById('month-navigation-dropdown');
-        dropdown.innerHTML = '';
+        const dropdown = document.getElementById('month-navigation-dropdown'); dropdown.innerHTML = '';
         monthsArray.forEach(m => {
-            const keyStr = `${m} ${activeYear}`;
-            initSpecificMonthSchema(keyStr); 
+            const keyStr = `${m} ${activeYear}`; initSpecificMonthSchema(keyStr); 
             let option = document.createElement('option'); option.value = keyStr; option.textContent = keyStr;
-            if(keyStr === currentMonthKey) option.selected = true;
-            dropdown.appendChild(option);
+            if(keyStr === currentMonthKey) option.selected = true; dropdown.appendChild(option);
         });
     }
 
@@ -905,24 +898,18 @@
         document.getElementById('num-exact-wants').value = state.manualAllocations?.wants || "";
         document.getElementById('num-exact-savings').value = state.manualAllocations?.savings || "";
 
-        currentRatioInputMode = state.inputMode || "slider";
-        enforceRatioUIVisualState();
-
-        document.getElementById('allowances-container').innerHTML = '';
-        state.payroll.allowances.forEach(a => addPayrollRow('allowance', a.name, a.value));
-        
-        document.getElementById('deductions-container').innerHTML = '';
-        state.payroll.deductions.forEach(d => addPayrollRow('deduction', d.name, d.value));
+        currentRatioInputMode = state.inputMode || "slider"; enforceRatioUIVisualState();
+        document.getElementById('allowances-container').innerHTML = ''; state.payroll.allowances.forEach(a => addPayrollRow('allowance', a.name, a.value));
+        document.getElementById('deductions-container').innerHTML = ''; state.payroll.deductions.forEach(d => addPayrollRow('deduction', d.name, d.value));
 
         calculatePayrollNettOutput(false); 
-        clearBudgetForm(); clearDebtForm(); updateSliderLabels();
-        renderDashboardView(); renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); renderSavingsGoalsTrackers();
+        clearBudgetForm(); clearDebtForm(); clearSavingsForm(); updateSliderLabels();
+        renderDashboardView(); renderExpenseDetailsTable(); renderAnnualPerformanceGrid();
     }
 
     function addPayrollRow(type, initialName = '', initialVal = 0) {
         const container = document.getElementById(type === 'allowance' ? 'allowances-container' : 'deductions-container');
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'payroll-item-row';
+        const rowDiv = document.createElement('div'); rowDiv.className = 'payroll-item-row';
         rowDiv.innerHTML = `
             <input type="text" placeholder="${type === 'allowance' ? 'e.g., Bonus' : 'e.g., Tax'}" value="${initialName}" oninput="syncPayrollStateData()">
             <input type="number" placeholder="RM" value="${initialVal || ''}" oninput="syncPayrollStateData()">
@@ -935,8 +922,7 @@
 
     function calculatePayrollNettOutput(shouldSaveToDatabase = true) {
         const state = localEngine.months[currentMonthKey];
-        const basicSalary = parseFloat(document.getElementById('pay-basic-salary').value) || 0;
-        state.payroll.basic = basicSalary;
+        const basicSalary = parseFloat(document.getElementById('pay-basic-salary').value) || 0; state.payroll.basic = basicSalary;
 
         let totalAllowances = 0; state.payroll.allowances = [];
         document.querySelectorAll('#allowances-container .payroll-item-row').forEach(row => {
@@ -953,11 +939,8 @@
         state.income = (basicSalary + totalAllowances) - totalDeductions; 
         document.getElementById('computed-nett-label').textContent = state.income.toLocaleString('en-US', {minimumFractionDigits:2}) + ' RM';
         
-        if (currentRatioInputMode === "manual") {
-            processManualRatioInputs(shouldSaveToDatabase);
-        } else {
-            updateSliderLabels(); calculateUnallocatedDrift(); if(shouldSaveToDatabase) commitDatabase();
-        }
+        if (currentRatioInputMode === "manual") { processManualRatioInputs(shouldSaveToDatabase); } 
+        else { updateSliderLabels(); calculateUnallocatedDrift(); if(shouldSaveToDatabase) commitDatabase(); }
     }
 
     function triggerManualPreviousMonthPayrollCopy() {
@@ -967,21 +950,13 @@
 
         if(!confirm(`Overwrite current configurations and import income profiles from ${targetKey}?`)) return;
         const state = localEngine.months[currentMonthKey];
-        state.payroll = JSON.parse(JSON.stringify(source.payroll));
-        state.percentages = JSON.parse(JSON.stringify(source.percentages));
+        state.payroll = JSON.parse(JSON.stringify(source.payroll)); state.percentages = JSON.parse(JSON.stringify(source.percentages));
         state.manualAllocations = JSON.parse(JSON.stringify(source.manualAllocations || {needs:0, wants:0, savings:0}));
-        state.inputMode = source.inputMode || "slider";
-        
-        currentRatioInputMode = state.inputMode; enforceRatioUIVisualState();
+        state.inputMode = source.inputMode || "slider"; currentRatioInputMode = state.inputMode; enforceRatioUIVisualState();
 
         document.getElementById('pay-basic-salary').value = state.payroll.basic || "";
-        document.getElementById('sl-needs').value = state.percentages.needs || 0;
-        document.getElementById('sl-wants').value = state.percentages.wants || 0;
-        document.getElementById('sl-savings').value = state.percentages.savings || 0;
-        
-        document.getElementById('num-exact-needs').value = state.manualAllocations.needs || "";
-        document.getElementById('num-exact-wants').value = state.manualAllocations.wants || "";
-        document.getElementById('num-exact-savings').value = state.manualAllocations.savings || "";
+        document.getElementById('sl-needs').value = state.percentages.needs || 0; document.getElementById('sl-wants').value = state.percentages.wants || 0; document.getElementById('sl-savings').value = state.percentages.savings || 0;
+        document.getElementById('num-exact-needs').value = state.manualAllocations.needs || ""; document.getElementById('num-exact-wants').value = state.manualAllocations.wants || ""; document.getElementById('num-exact-savings').value = state.manualAllocations.savings || "";
 
         calculatePayrollNettOutput(true);
     }
@@ -997,11 +972,11 @@
     function navigatePage(targetId, navButton) {
         document.querySelectorAll('.app-view').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-        document.getElementById('page-' + targetId).classList.add('active');
-        navButton.classList.add('active');
+        document.getElementById('page-' + targetId).classList.add('active'); navButton.classList.add('active');
         if (targetId === 'overview') renderDashboardView();
-        if (targetId === 'expenses') { renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); renderSavingsGoalsTrackers(); }
+        if (targetId === 'expenses') { renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); }
         if (targetId === 'earning') { updateSliderLabels(); calculateUnallocatedDrift(); }
+        if (targetId === 'savings') renderSavingsTrackerLedger();
         if (targetId === 'debts') renderDebtTrackerLedger();
     }
 
@@ -1018,21 +993,27 @@
         currentBudgets.forEach(b => { let opt = document.createElement('option'); opt.value = b.name; opt.textContent = `[${b.group}] - ${b.name}`; selector.appendChild(opt); });
     }
 
-    function recalculateDebtPaymentsFromLogFeeds() {
-        if(!localEngine.debts) return; localEngine.debts.forEach(d => { d.paid = 0; });
+    function recalculateCrossPageLedgerContributions() {
+        if(localEngine.debts) localEngine.debts.forEach(d => d.paid = 0);
+        if(!localEngine.savingsGoals) localEngine.savingsGoals = [];
+        localEngine.savingsGoals.forEach(s => s.accumulated = 0);
+
         Object.keys(localEngine.months).forEach(mKey => {
             if(localEngine.months[mKey].expenses) {
                 localEngine.months[mKey].expenses.forEach(exp => {
-                    let matchingDebt = localEngine.debts.find(d => d.name.toLowerCase() === exp.item.toLowerCase());
-                    if(matchingDebt) d.paid += exp.cost;
+                    let matchingDebt = localEngine.debts ? localEngine.debts.find(d => d.name.toLowerCase() === exp.item.toLowerCase()) : null;
+                    if(matchingDebt) matchingDebt.paid += exp.cost;
+
+                    let matchingSavings = localEngine.savingsGoals.find(s => s.name.toLowerCase() === exp.item.toLowerCase());
+                    if(matchingSavings) matchingSavings.accumulated += exp.cost;
                 });
             }
         });
     }
 
-    // HIGH PERFORMANCE INTERACTIVE APEXCHARTS INITIALIZATION & UPDATE INTERFACE ENGINE
+    // UPDATED DASHBOARD RENDER FEATURING STABLE RE-INTEGRATED TEXT VISUALS
     function renderDashboardView() {
-        recalculateDebtPaymentsFromLogFeeds();
+        recalculateCrossPageLedgerContributions();
         const state = localEngine.months[currentMonthKey];
         let totalDisbursed = 0; let itemSpendingAccumulator = {};
         state.expenses.forEach(e => { totalDisbursed += e.cost; itemSpendingAccumulator[e.item] = (itemSpendingAccumulator[e.item] || 0) + e.cost; });
@@ -1048,25 +1029,17 @@
             poolNeeds = state.income * ((state.percentages?.needs || 0) / 100); poolWants = state.income * ((state.percentages?.wants || 0) / 100); poolSavings = state.income * ((state.percentages?.savings || 0) / 100);
         }
 
-        // COMPILE APEXCHARTS RADIAL METRIC DATA ARRAY CONFIGURATIONS
-        const isDarkUi = document.documentElement.getAttribute('data-theme') === 'dark';
-        const chartDataOptions = {
-            series: [parseFloat(poolNeeds.toFixed(2)), parseFloat(poolWants.toFixed(2)), parseFloat(poolSavings.toFixed(2))],
-            chart: { type: 'donut', height: 240, fontFamily: 'inherit' },
-            labels: ['Needs Pool', 'Wants Pool', 'Savings Pool'],
-            colors: ['#007AFF', '#FF9500', '#34C759'],
-            legend: { position: 'bottom', labels: { colors: isDarkUi ? '#F8FAFC' : '#1D2129' } },
-            dataLabels: { enabled: false },
-            stroke: { colors: [isDarkUi ? '#1E293B' : '#FFFFFF'] },
-            plotOptions: { pie: { donut: { labels: { show: true, name: { color: isDarkUi ? '#94A3B8' : '#656E7B' }, value: { color: isDarkUi ? '#F8FAFC' : '#1D2129', formatter: (v) => `${parseFloat(v).toLocaleString()} RM` }, total: { show: true, label: 'Allocated', color: isDarkUi ? '#94A3B8' : '#656E7B', formatter: (w) => `${w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString()} RM` } } } } }
-        };
+        // COMPUTE CURRENT REMAINING MARGINS FOR TEXT BLOCKS
+        let spendingNeeds = 0, spendingWants = 0, spendingSavings = 0;
+        state.expenses.forEach(e => {
+            if(e.group === 'Needs') spendingNeeds += e.cost;
+            if(e.group === 'Wants') spendingWants += e.cost;
+            if(e.group === 'Savings') spendingSavings += e.cost;
+        });
 
-        if (apexDonutChartInstance) {
-            apexDonutChartInstance.updateOptions(chartDataOptions);
-        } else {
-            apexDonutChartInstance = new ApexCharts(document.getElementById('overview-donut-chart'), chartDataOptions);
-            apexDonutChartInstance.render();
-        }
+        document.getElementById('lbl-pool-needs').textContent = `${(poolNeeds - spendingNeeds).toFixed(2)} RM`;
+        document.getElementById('lbl-pool-wants').textContent = `${(poolWants - spendingWants).toFixed(2)} RM`;
+        document.getElementById('lbl-pool-savings').textContent = `${(poolSavings - spendingSavings).toFixed(2)} RM`;
 
         const alertCardElement = document.getElementById('alert-warning-card');
         const alertItemsHook = document.getElementById('alert-items-hook');
@@ -1093,7 +1066,7 @@
             } else if (customWarnPct < 100 && expenseSpent >= structuralThresholdValue && expenseSpent > 0) {
                 triggerAlertFlag = true; const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
                 let wrapper = document.createElement('div'); wrapper.className = 'budget-progress-item';
-                wrapper.innerHTML = `<div class="progress-meta warning-text-color"><span>⚠️ ${b.name} (${b.group})</span><span>Threshold Milestone Crossed (${expenseSpent.toFixed(2)} / ${b.cap.toFixed(0)} RM)</span></div><div class="progress-bar"><div class="progress-fill warning-bg-bar" style="width: ${utilizationPct}%;"></div></div>`;
+                wrapper.innerHTML = `<div class="progress-meta warning-text-color"><span>⚠️ ${b.name} (${b.group})</span><span>Threshold Crossed (${expenseSpent.toFixed(2)} / ${b.cap.toFixed(0)} RM)</span></div><div class="progress-bar"><div class="progress-fill warning-bg-bar" style="width: ${utilizationPct}%;"></div></div>`;
                 alertItemsHook.appendChild(wrapper);
             }
         });
@@ -1125,7 +1098,6 @@
     function toggleRatioInputMode() {
         currentRatioInputMode = (currentRatioInputMode === "slider") ? "manual" : "slider";
         localEngine.months[currentMonthKey].inputMode = currentRatioInputMode; enforceRatioUIVisualState();
-        
         if (currentRatioInputMode === "manual") {
             const state = localEngine.months[currentMonthKey];
             if(!state.manualAllocations) {
@@ -1139,9 +1111,7 @@
             document.getElementById('num-exact-wants').value = state.manualAllocations.wants || "";
             document.getElementById('num-exact-savings').value = state.manualAllocations.savings || "";
             processManualRatioInputs(true);
-        } else {
-            updateSliderLabels(); calculateUnallocatedDrift(); commitDatabase();
-        }
+        } else { updateSliderLabels(); calculateUnallocatedDrift(); commitDatabase(); }
     }
 
     function enforceRatioUIVisualState() {
@@ -1211,53 +1181,30 @@
         else { displayLabel.textContent = `Active at ${sliderValue}%`; displayLabel.style.color = "var(--color-wants)"; }
     }
 
-    // EXPENSES TRACKER MANAGER INGESTION OVERHAUL WITH INTEGRATED RECURRING FLAGS
     function commitCustomBudgetItem() {
-        const group = document.getElementById('cfg-item-group').value; 
-        const name = document.getElementById('cfg-item-name').value.trim(); 
-        const cap = parseFloat(document.getElementById('cfg-item-cap').value); 
-        const warningPctValue = parseInt(document.getElementById('cfg-warning-pct').value);
-        const isRecurring = document.getElementById('cfg-item-recurring').checked;
-        const idx = parseInt(document.getElementById('cfg-editing-index').value);
-        
+        const group = document.getElementById('cfg-item-group').value; const name = document.getElementById('cfg-item-name').value.trim(); const cap = parseFloat(document.getElementById('cfg-item-cap').value); const warningPctValue = parseInt(document.getElementById('cfg-warning-pct').value); const isRecurring = document.getElementById('cfg-item-recurring').checked; const idx = parseInt(document.getElementById('cfg-editing-index').value);
         if(!name || isNaN(cap) || cap <= 0) return alert("Verify core allocation parameters constraints.");
         let col = localEngine.months[currentMonthKey].budgets;
         
         if (idx >= 0) {
             const histName = col[idx].name;
-            if (histName.toLowerCase() !== name.toLowerCase()) { 
-                localEngine.months[currentMonthKey].expenses.forEach(e => { if (e.item.toLowerCase() === histName.toLowerCase()) { e.item = name; e.group = group; } }); 
-            }
+            if (histName.toLowerCase() !== name.toLowerCase()) { localEngine.months[currentMonthKey].expenses.forEach(e => { if (e.item.toLowerCase() === histName.toLowerCase()) { e.item = name; e.group = group; } }); }
             col[idx] = { group, name, cap, warningPct: warningPctValue, recurring: isRecurring };
         } else {
             let match = col.find(i => i.name.toLowerCase() === name.toLowerCase()); 
-            if (match) { 
-                match.group = group; match.cap = cap; match.warningPct = warningPctValue; match.recurring = isRecurring;
-            } else { 
-                col.push({ group, name, cap, warningPct: warningPctValue, recurring: isRecurring }); 
-            }
+            if (match) { match.group = group; match.cap = cap; match.warningPct = warningPctValue; match.recurring = isRecurring; } 
+            else { col.push({ group, name, cap, warningPct: warningPctValue, recurring: isRecurring }); }
         }
         commitDatabase(); renderExpenseDetailsTable(); clearBudgetForm();
     }
 
     function loadBudgetEditPreset(index) {
-        const target = localEngine.months[currentMonthKey].budgets[index];
-        document.getElementById('cfg-editing-index').value = index; 
-        document.getElementById('cfg-item-group').value = target.group; 
-        document.getElementById('cfg-item-name').value = target.name; 
-        document.getElementById('cfg-item-cap').value = target.cap;
-        document.getElementById('cfg-item-recurring').checked = target.recurring === true;
-        
-        document.getElementById('cfg-warning-pct').value = target.warningPct !== undefined ? target.warningPct : 100;
-        updateFormWarningLabel();
-        
-        document.getElementById('budget-form-heading').textContent = "✏️ Editing: " + target.name; 
-        document.getElementById('btn-cancel-budget-edit').style.display = "block"; document.getElementById('cfg-item-name').focus();
+        const target = localEngine.months[currentMonthKey].budgets[index]; document.getElementById('cfg-editing-index').value = index; document.getElementById('cfg-item-group').value = target.group; document.getElementById('cfg-item-name').value = target.name; document.getElementById('cfg-item-cap').value = target.cap; document.getElementById('cfg-item-recurring').checked = target.recurring === true; document.getElementById('cfg-warning-pct').value = target.warningPct !== undefined ? target.warningPct : 100; updateFormWarningLabel();
+        document.getElementById('budget-form-heading').textContent = "✏️ Editing: " + target.name; document.getElementById('btn-cancel-budget-edit').style.display = "block"; document.getElementById('cfg-item-name').focus();
     }
 
     function clearBudgetForm() { 
-        document.getElementById('cfg-editing-index').value = "-1"; document.getElementById('cfg-item-name').value = ""; document.getElementById('cfg-item-cap').value = ""; 
-        document.getElementById('cfg-item-recurring').checked = false; document.getElementById('cfg-warning-pct').value = 100; updateFormWarningLabel();
+        document.getElementById('cfg-editing-index').value = "-1"; document.getElementById('cfg-item-name').value = ""; document.getElementById('cfg-item-cap').value = ""; document.getElementById('cfg-item-recurring').checked = false; document.getElementById('cfg-warning-pct').value = 100; updateFormWarningLabel();
         document.getElementById('budget-form-heading').textContent = "Create / Update Target Allocations"; document.getElementById('btn-cancel-budget-edit').style.display = "none"; 
     }
 
@@ -1273,7 +1220,7 @@
     function renderExpenseDetailsTable() {
         const tableBody = document.getElementById('details-table-hook'); tableBody.innerHTML = '';
         const state = localEngine.months[currentMonthKey]; const filter = document.getElementById('ledger-category-filter').value;
-        let itemSpent = {}; state.expenses.forEach(e => { itemSpent[e.item] = (itemSpent[e.item] || 0) + e.cost; });
+        let itemSpent = {}; state.expenses.forEach(e => itemSpent[e.item] = (itemSpent[e.item] || 0) + e.cost);
         let filtered = filter !== 'ALL' ? state.budgets.filter(b => b.group === filter) : state.budgets;
         if(filtered.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No custom items mapped.</td></tr>`; return; }
         filtered.forEach((b) => {
@@ -1289,59 +1236,61 @@
 
     function renderAnnualPerformanceGrid() {
         const hook = document.getElementById('annual-matrix-hook'); hook.innerHTML = ''; let inc = 0; let spent = 0;
-        Object.keys(localEngine.months).forEach(k => { inc += localEngine.months[k].income; if(localEngine.months[k].expenses) { localEngine.months[k].expenses.forEach(e => { spent += e.cost; }); } });
+        Object.keys(localEngine.months).forEach(k => { inc += localEngine.months[k].income; if(localEngine.months[k].expenses) { localEngine.months[k].expenses.forEach(e => spent += e.cost); } });
         let inner = document.createElement('div'); inner.className = 'macro-grid'; inner.style.marginTop = '10px';
-        inner.innerHTML = `<div class="macro-block"><div class="macro-label">YTD Income</div><div class="macro-val">${inc.toLocaleString()} RM</div></div><div class="macro-block"><div class="macro-label">YTD Spent</div><div class="macro-val">${spent.toLocaleString()} RM</div></div><div class="macro-block"><div class="macro-label">YTD Savings</div><div class="macro-val c-savings">${(inc - spent).toLocaleString()} RM</div></div>`;
+        inner.innerHTML = `<div class="macro-block"><div class="macro-label">YTD Income</div><div class="macro-val">${inc.toLocaleString()} RM</div></div><div class="macro-block"><div class="macro-label">YTD Spent</div><div class="macro-val">${spent.toLocaleString()} RM</div></div><div class="macro-block"><div class="macro-label">YTD Net</div><div class="macro-val c-savings">${(inc - spent).toLocaleString()} RM</div></div>`;
         hook.appendChild(inner);
     }
 
-    // MULTI-TIER LONG TERM SAVINGS TARGET MANAGEMENT CORE ENGINE
-    function commitLongTermSavingsGoal() {
-        const nameEl = document.getElementById('goal-input-name'); const targetEl = document.getElementById('goal-input-target');
-        const name = nameEl.value.trim(); const targetVal = parseFloat(targetEl.value);
-        if(!name || isNaN(targetVal) || targetVal <= 0) return alert("Verify target parameters allocation metrics.");
+    // NEW SAVINGS PAGE CORE ENGINE OPERATIONS (IDENTICAL MIRROR ARCHITECTURE TO DEBTS LAYER)
+    function commitSavingsRegistry() {
+        const label = document.getElementById('save-reg-name').value.trim(); const targetCap = parseFloat(document.getElementById('save-reg-total').value); const monthlyInst = parseFloat(document.getElementById('save-reg-installment').value) || 0; const connect = document.getElementById('save-connect-budget').checked; const idx = parseInt(document.getElementById('savings-editing-index').value);
+        if (!label || isNaN(targetCap) || targetCap <= 0) return alert("Verify field limits validation parameters.");
         
-        localEngine.savingsGoals.push({ id: Date.now(), name, target: targetVal });
-        nameEl.value = ''; targetEl.value = ''; commitDatabase(); renderSavingsGoalsTrackers();
+        if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
+
+        if (idx >= 0) {
+            let oldName = localEngine.savingsGoals[idx].name; localEngine.savingsGoals[idx] = { name: label, total: targetCap, accumulated: localEngine.savingsGoals[idx].accumulated, targetInstallment: monthlyInst, connectToBudget: connect };
+            if (oldName.toLowerCase() !== label.toLowerCase()) { Object.keys(localEngine.months).forEach(mKey => { localEngine.months[mKey].budgets.forEach(b => { if (b.name.toLowerCase() === oldName.toLowerCase()) b.name = label; }); localEngine.months[mKey].expenses.forEach(e => { if (e.item.toLowerCase() === oldName.toLowerCase()) e.item = label; }); }); }
+        } else { localEngine.savingsGoals.push({ name: label, total: targetCap, accumulated: 0, targetInstallment: monthlyInst, connectToBudget: connect }); }
+        
+        if (connect) {
+            let exists = localEngine.months[currentMonthKey].budgets.some(b => b.name.toLowerCase() === label.toLowerCase());
+            if (!exists) { localEngine.months[currentMonthKey].budgets.push({ group: "Savings", name: label, cap: monthlyInst, warningPct: 100 }); } 
+            else { let curr = localEngine.months[currentMonthKey].budgets.find(b => b.name.toLowerCase() === label.toLowerCase()); curr.cap = monthlyInst; curr.group = "Savings"; }
+        }
+        commitDatabase(); renderSavingsTrackerLedger(); clearSavingsForm();
     }
 
-    function renderSavingsGoalsTrackers() {
-        const hook = document.getElementById('savings-goals-progress-hook'); hook.innerHTML = '';
-        if(!localEngine.savingsGoals || localEngine.savingsGoals.length === 0) { hook.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:6px;">No goals initialized. Allocate targets above.</div>'; return; }
-        
-        // AGGREGATE ENTIRE CUMULATIVE LIFE-LOG SAVINGS REALIZED
-        let totalHistoricalSavingsRealized = 0;
-        Object.keys(localEngine.months).forEach(k => {
-            let inc = localEngine.months[k].income || 0; let out = 0;
-            if(localEngine.months[k].expenses) { localEngine.months[k].expenses.forEach(e => out += e.cost); }
-            totalHistoricalSavingsRealized += (inc - out);
-        });
-        if (totalHistoricalSavingsRealized < 0) totalHistoricalSavingsRealized = 0;
-
-        let trackingPoolRemaining = totalHistoricalSavingsRealized;
-
-        localEngine.savingsGoals.forEach((g, idx) => {
-            const dynamicAllocatedGoalFunding = Math.min(trackingPoolRemaining, g.target);
-            trackingPoolRemaining -= dynamicAllocatedGoalFunding;
-            const completionPercentage = Math.min((dynamicAllocatedGoalFunding / g.target) * 100, 100);
-
-            let box = document.createElement('div'); box.className = 'budget-progress-item'; box.style.marginBottom = '12px';
-            box.innerHTML = `
-                <div class="progress-meta">
-                    <span style="font-weight:700; font-size:13px;">🎯 ${g.name}</span>
-                    <span style="font-size:12px; font-weight:700;" class="c-savings">${dynamicAllocatedGoalFunding.toFixed(0)} / ${g.target.toFixed(0)} RM (${completionPercentage.toFixed(0)}%)</span>
-                </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${completionPercentage}%; background-color:var(--color-savings);"></div></div>
-                    <button class="btn-trash" style="padding:0 4px; font-size:12px;" onclick="purgeSavingsGoalMetric(${idx})">✕</button>
-                </div>
-            `;
-            hook.appendChild(box);
-        });
+    function loadSavingsEditPreset(index) {
+        const target = localEngine.savingsGoals[index]; document.getElementById('savings-editing-index').value = index; document.getElementById('save-reg-name').value = target.name; document.getElementById('save-reg-total').value = target.total; document.getElementById('save-reg-installment').value = target.targetInstallment; document.getElementById('save-connect-budget').checked = target.connectToBudget !== false;
+        document.getElementById('savings-form-heading').textContent = "✏️ Editing Goal: " + target.name; document.getElementById('btn-submit-savings').textContent = "Update Details"; document.getElementById('btn-cancel-savings-edit').style.display = "block"; document.getElementById('save-reg-name').focus();
     }
 
-    function purgeSavingsGoalMetric(idx) { if(confirm("Erase this milestone target tracker line parameter?")) { localEngine.savingsGoals.splice(idx, 1); commitDatabase(); renderSavingsGoalsTrackers(); } }
+    function clearSavingsForm() { document.getElementById('savings-editing-index').value = "-1"; document.getElementById('save-reg-name').value = ""; document.getElementById('save-reg-total').value = ""; document.getElementById('save-reg-installment').value = ""; document.getElementById('save-connect-budget').checked = true; document.getElementById('savings-form-heading').textContent = "Register Savings Milestone"; document.getElementById('btn-submit-savings').textContent = "Register Savings Goal"; document.getElementById('btn-cancel-savings-edit').style.display = "none"; }
 
+    function renderSavingsTrackerLedger() {
+        recalculateCrossPageLedgerContributions(); const listHook = document.getElementById('savings-list-hook'); listHook.innerHTML = ''; let sum = 0; let sb = localEngine.savingsGoals || [];
+        if(sb.length === 0) { listHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No recorded milestone goals.</div>'; document.getElementById('savings-aggregate-summary').textContent = '0.00 RM'; return; }
+        sb.forEach((s, index) => {
+            sum += s.accumulated; let row = document.createElement('div'); row.className = 'ledger-row';
+            row.innerHTML = `<div class="ledger-main"><span class="ledger-title">${s.name} <small style="color:var(--text-muted); font-weight:normal;">${s.connectToBudget !== false ? '(Linked)' : '(Isolated)'}</small></span><span class="ledger-subtitle">Progress: ${s.accumulated.toFixed(2)} / ${s.total.toFixed(2)} RM</span></div><div class="ledger-right"><span class="ledger-value c-savings">+ ${s.accumulated.toLocaleString('en-US', {minimumFractionDigits: 2})} RM</span><button class="btn-inline-pay" onclick="triggerInlineDepositSheet(${index})">Deposit</button><button class="btn-inline-edit" onclick="loadSavingsEditPreset(${index})">Edit</button><button class="btn-trash" onclick="purgeSavingsProfileLine(${index})">✕</button></div>`;
+            listHook.appendChild(row);
+        });
+        document.getElementById('savings-aggregate-summary').textContent = sum.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' RM';
+    }
+
+    function triggerInlineDepositSheet(index) { document.getElementById('deposit-target-index').value = index; toggleModal('savings-deposit-modal', true); }
+    function submitSavingsDeposit() {
+        const idx = parseInt(document.getElementById('deposit-target-index').value); const val = parseFloat(document.getElementById('deposit-amount-field').value);
+        if(isNaN(val) || val <= 0) return alert("Verify target constraints parameters.");
+        let s = localEngine.savingsGoals[idx]; localEngine.months[currentMonthKey].expenses.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], item: s.name, group: "Savings", cost: val });
+        commitDatabase(); renderSavingsTrackerLedger(); toggleModal('savings-deposit-modal', false); document.getElementById('deposit-amount-field').value = '';
+    }
+
+    function purgeSavingsProfileLine(index) { if (confirm("Erase this savings milestone record?")) { localEngine.savingsGoals.splice(index, 1); commitDatabase(); renderSavingsTrackerLedger(); } }
+
+    // DEBT LAYER PROFILE METHODS
     function commitDebtRegistry() {
         const label = document.getElementById('debt-reg-name').value.trim(); const principal = parseFloat(document.getElementById('debt-reg-total').value); const targetInst = parseFloat(document.getElementById('debt-reg-installment').value) || 0; const connect = document.getElementById('debt-connect-budget').checked; const idx = parseInt(document.getElementById('debt-editing-index').value);
         if (!label || isNaN(principal) || principal <= 0) return alert("Verify field limits validation parameters.");
@@ -1365,7 +1314,7 @@
     function clearDebtForm() { document.getElementById('debt-editing-index').value = "-1"; document.getElementById('debt-reg-name').value = ""; document.getElementById('debt-reg-total').value = ""; document.getElementById('debt-reg-installment').value = ""; document.getElementById('debt-connect-budget').checked = true; document.getElementById('debt-form-heading').textContent = "Register Liability Line"; document.getElementById('btn-submit-debt').textContent = "Register Debt Line"; document.getElementById('btn-cancel-debt-edit').style.display = "none"; }
 
     function renderDebtTrackerLedger() {
-        recalculateDebtPaymentsFromLogFeeds(); const listHook = document.getElementById('debt-list-hook'); listHook.innerHTML = ''; let sum = 0; let db = localEngine.debts || [];
+        recalculateCrossPageLedgerContributions(); const listHook = document.getElementById('debt-list-hook'); listHook.innerHTML = ''; let sum = 0; let db = localEngine.debts || [];
         if(db.length === 0) { listHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No recorded liabilities.</div>'; document.getElementById('debt-aggregate-summary').textContent = '0.00 RM'; return; }
         db.forEach((d, index) => {
             let owed = d.total - d.paid; sum += owed; let row = document.createElement('div'); row.className = 'ledger-row';
