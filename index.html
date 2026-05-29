@@ -1011,7 +1011,6 @@
         });
     }
 
-    // UPDATED DASHBOARD RENDER FEATURING STABLE RE-INTEGRATED TEXT VISUALS
     function renderDashboardView() {
         recalculateCrossPageLedgerContributions();
         const state = localEngine.months[currentMonthKey];
@@ -1029,7 +1028,6 @@
             poolNeeds = state.income * ((state.percentages?.needs || 0) / 100); poolWants = state.income * ((state.percentages?.wants || 0) / 100); poolSavings = state.income * ((state.percentages?.savings || 0) / 100);
         }
 
-        // COMPUTE CURRENT REMAINING MARGINS FOR TEXT BLOCKS
         let spendingNeeds = 0, spendingWants = 0, spendingSavings = 0;
         state.expenses.forEach(e => {
             if(e.group === 'Needs') spendingNeeds += e.cost;
@@ -1242,7 +1240,7 @@
         hook.appendChild(inner);
     }
 
-    // NEW SAVINGS PAGE CORE ENGINE OPERATIONS (IDENTICAL MIRROR ARCHITECTURE TO DEBTS LAYER)
+    // FIXED: SAVINGS MILESTONES CONTROLLERS & ENGINE HOOKS
     function commitSavingsRegistry() {
         const label = document.getElementById('save-reg-name').value.trim(); const targetCap = parseFloat(document.getElementById('save-reg-total').value); const monthlyInst = parseFloat(document.getElementById('save-reg-installment').value) || 0; const connect = document.getElementById('save-connect-budget').checked; const idx = parseInt(document.getElementById('savings-editing-index').value);
         if (!label || isNaN(targetCap) || targetCap <= 0) return alert("Verify field limits validation parameters.");
