@@ -172,7 +172,6 @@
         .card-alert-header { background-color: rgba(255, 59, 48, 0.1); border: 1px solid var(--color-alert); }
         .card-alert-header .card-title { color: var(--color-alert); }
 
-        /* VINTAGE TEXT-BASED SUMMARY BLOCKS GRID */
         .macro-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -575,7 +574,7 @@
                     <strong>🎯 Asset &amp; Reserve Registry:</strong>
                     <ul>
                         <li>Set long-term savings goals and track accumulation progress benchmarks.</li>
-                        <li>Check "Auto-populate" to link a dedicated tracker row under your monthly Savings pool automatically.</li>
+                        <li><strong>Base Value:</strong> Enter money already saved toward this milestone prior to using the app so it adds into your totals immediately!</li>
                     </ul>
                 </div>
             </div>
@@ -590,6 +589,10 @@
                 <div class="input-group">
                     <label>Total Milestone Target (RM)</label>
                     <input type="number" id="save-reg-total" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label>Current Saved Amount / Starting Balance (RM)</label>
+                    <input type="number" id="save-reg-base" placeholder="0.00" value="0">
                 </div>
                 <div class="input-group">
                     <label>Monthly Target Deposit Allocation (RM)</label>
@@ -993,10 +996,14 @@
         currentBudgets.forEach(b => { let opt = document.createElement('option'); opt.value = b.name; opt.textContent = `[${b.group}] - ${b.name}`; selector.appendChild(opt); });
     }
 
+    // UPDATED: CORE ENGINE MATHEMATICS FIXES FOR INJECTED BASE BALANCES
     function recalculateCrossPageLedgerContributions() {
         if(localEngine.debts) localEngine.debts.forEach(d => d.paid = 0);
         if(!localEngine.savingsGoals) localEngine.savingsGoals = [];
-        localEngine.savingsGoals.forEach(s => s.accumulated = 0);
+        
+        localEngine.savingsGoals.forEach(s => {
+            s.accumulated = parseFloat(s.baseValue || 0); 
+        });
 
         Object.keys(localEngine.months).forEach(mKey => {
             if(localEngine.months[mKey].expenses) {
@@ -1240,17 +1247,26 @@
         hook.appendChild(inner);
     }
 
-    // FIXED: SAVINGS MILESTONES CONTROLLERS & ENGINE HOOKS
+    // FIXED: IMPLEMENTED BASE VALUE LOGICS SO REGISTRATIONS APPEAR IMMEDIATELY
     function commitSavingsRegistry() {
-        const label = document.getElementById('save-reg-name').value.trim(); const targetCap = parseFloat(document.getElementById('save-reg-total').value); const monthlyInst = parseFloat(document.getElementById('save-reg-installment').value) || 0; const connect = document.getElementById('save-connect-budget').checked; const idx = parseInt(document.getElementById('savings-editing-index').value);
+        const label = document.getElementById('save-reg-name').value.trim(); 
+        const targetCap = parseFloat(document.getElementById('save-reg-total').value); 
+        const startingBalance = parseFloat(document.getElementById('save-reg-base').value) || 0;
+        const monthlyInst = parseFloat(document.getElementById('save-reg-installment').value) || 0; 
+        const connect = document.getElementById('save-connect-budget').checked; 
+        const idx = parseInt(document.getElementById('savings-editing-index').value);
+        
         if (!label || isNaN(targetCap) || targetCap <= 0) return alert("Verify field limits validation parameters.");
         
         if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
 
         if (idx >= 0) {
-            let oldName = localEngine.savingsGoals[idx].name; localEngine.savingsGoals[idx] = { name: label, total: targetCap, accumulated: localEngine.savingsGoals[idx].accumulated, targetInstallment: monthlyInst, connectToBudget: connect };
+            let oldName = localEngine.savingsGoals[idx].name; 
+            localEngine.savingsGoals[idx] = { name: label, total: targetCap, baseValue: startingBalance, accumulated: startingBalance, targetInstallment: monthlyInst, connectToBudget: connect };
             if (oldName.toLowerCase() !== label.toLowerCase()) { Object.keys(localEngine.months).forEach(mKey => { localEngine.months[mKey].budgets.forEach(b => { if (b.name.toLowerCase() === oldName.toLowerCase()) b.name = label; }); localEngine.months[mKey].expenses.forEach(e => { if (e.item.toLowerCase() === oldName.toLowerCase()) e.item = label; }); }); }
-        } else { localEngine.savingsGoals.push({ name: label, total: targetCap, accumulated: 0, targetInstallment: monthlyInst, connectToBudget: connect }); }
+        } else { 
+            localEngine.savingsGoals.push({ name: label, total: targetCap, baseValue: startingBalance, accumulated: startingBalance, targetInstallment: monthlyInst, connectToBudget: connect }); 
+        }
         
         if (connect) {
             let exists = localEngine.months[currentMonthKey].budgets.some(b => b.name.toLowerCase() === label.toLowerCase());
@@ -1261,11 +1277,11 @@
     }
 
     function loadSavingsEditPreset(index) {
-        const target = localEngine.savingsGoals[index]; document.getElementById('savings-editing-index').value = index; document.getElementById('save-reg-name').value = target.name; document.getElementById('save-reg-total').value = target.total; document.getElementById('save-reg-installment').value = target.targetInstallment; document.getElementById('save-connect-budget').checked = target.connectToBudget !== false;
+        const target = localEngine.savingsGoals[index]; document.getElementById('savings-editing-index').value = index; document.getElementById('save-reg-name').value = target.name; document.getElementById('save-reg-total').value = target.total; document.getElementById('save-reg-base').value = target.baseValue || 0; document.getElementById('save-reg-installment').value = target.targetInstallment; document.getElementById('save-connect-budget').checked = target.connectToBudget !== false;
         document.getElementById('savings-form-heading').textContent = "✏️ Editing Goal: " + target.name; document.getElementById('btn-submit-savings').textContent = "Update Details"; document.getElementById('btn-cancel-savings-edit').style.display = "block"; document.getElementById('save-reg-name').focus();
     }
 
-    function clearSavingsForm() { document.getElementById('savings-editing-index').value = "-1"; document.getElementById('save-reg-name').value = ""; document.getElementById('save-reg-total').value = ""; document.getElementById('save-reg-installment').value = ""; document.getElementById('save-connect-budget').checked = true; document.getElementById('savings-form-heading').textContent = "Register Savings Milestone"; document.getElementById('btn-submit-savings').textContent = "Register Savings Goal"; document.getElementById('btn-cancel-savings-edit').style.display = "none"; }
+    function clearSavingsForm() { document.getElementById('savings-editing-index').value = "-1"; document.getElementById('save-reg-name').value = ""; document.getElementById('save-reg-total').value = ""; document.getElementById('save-reg-base').value = "0"; document.getElementById('save-reg-installment').value = ""; document.getElementById('save-connect-budget').checked = true; document.getElementById('savings-form-heading').textContent = "Register Savings Milestone"; document.getElementById('btn-submit-savings').textContent = "Register Savings Goal"; document.getElementById('btn-cancel-savings-edit').style.display = "none"; }
 
     function renderSavingsTrackerLedger() {
         recalculateCrossPageLedgerContributions(); const listHook = document.getElementById('savings-list-hook'); listHook.innerHTML = ''; let sum = 0; let sb = localEngine.savingsGoals || [];
