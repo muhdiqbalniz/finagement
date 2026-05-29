@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finagement Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
             --bg-primary: #F2F4F7;
@@ -172,19 +173,23 @@
         .card-alert-header { background-color: rgba(255, 59, 48, 0.1); border: 1px solid var(--color-alert); }
         .card-alert-header .card-title { color: var(--color-alert); }
 
-        .macro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-        .macro-block { text-align: center; padding: 10px 4px; border-radius: 10px; background: rgba(0,0,0,0.02); }
-        .macro-label { font-size: 10px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
-        .macro-val { font-size: 12px; font-weight: 700; }
+        /* ANALYTICS CONTAINER GRAPH STYLING */
+        .chart-box-wrapper {
+            min-height: 220px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
         .budget-progress-item { margin-bottom: 16px; }
+        .budget-progress-item:last-child { margin-bottom: 0; }
         .progress-meta { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
         .progress-bar { height: 10px; background-color: var(--border-color); border-radius: 5px; overflow: hidden; }
         .progress-fill { height: 100%; width: 0%; border-radius: 5px; transition: width 0.3s ease; }
 
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
-        .slider-meta-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
 
         .payroll-item-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
         .payroll-item-row input[type="text"] { flex: 2; }
@@ -313,17 +318,21 @@
     <div class="main-container">
         <div id="new-user-walkthrough-panel" class="card" style="display: none; border-top: 4px solid var(--color-savings);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                <h3 style="margin:0; font-size:16px; font-weight:800;">👋 Welcome to Finagement!</h3>
+                <h3 style="margin:0; font-size:16px; font-weight:800;">👋 Welcome to Finagement Pro!</h3>
                 <button class="btn-trash" style="padding:0; font-size:16px;" onclick="dismissOnboardingTutorial()">✕</button>
             </div>
-            <p style="font-size: 13px; margin: 0 0 12px 0; color: var(--text-muted);">Let's get your monthly dashboard ready in 2 quick steps:</p>
+            <p style="font-size: 13px; margin: 0 0 12px 0; color: var(--text-muted);">Let's organize your dashboard in 3 quick steps:</p>
             <div class="tutorial-box">
-                <div class="tutorial-title">💵 Step 1: Set Up Your Income</div>
-                <div style="font-size:12px; color:var(--text-muted);">Head to the <strong>Income</strong> tab. Enter your base pay and any allowances or dynamic deductions to find your true <strong>Nett Pay</strong>, then divide it into your main financial buckets.</div>
+                <div class="tutorial-title">💵 Step 1: Track Your Income</div>
+                <div style="font-size:12px; color:var(--text-muted);">Enter your base pay and any modifications under the <strong>Income</strong> tab to map out allocation limits.</div>
             </div>
             <div class="tutorial-box">
-                <div class="tutorial-title">📦 Step 2: Establish Expense Budgets</div>
-                <div style="font-size:12px; color:var(--text-muted);">Use the <strong>Expenses</strong> tab to map out custom individual targets under Needs, Wants, or Savings (like Rent, Groceries, or Investments).</div>
+                <div class="tutorial-title">⚙️ Step 2: Set Budgets &amp; Subscriptions</div>
+                <div style="font-size:12px; color:var(--text-muted);">Create dynamic trackers under <strong>Expenses</strong>. Check the "Recurring" flag to auto-migrate monthly utility commitments.</div>
+            </div>
+            <div class="tutorial-box">
+                <div class="tutorial-title">🎯 Step 3: Establish Savings Milestone Goals</div>
+                <div style="font-size:12px; color:var(--text-muted);">Lock away chunks of your Savings pool into long-term tracking metrics directly from the Expenses tab.</div>
             </div>
         </div>
 
@@ -334,34 +343,25 @@
                     <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-overview-box')">Help</button>
                 </div>
                 <div id="guide-overview-box" class="guide-box">
-                    <strong>📱 Executive Dashboard Insights:</strong>
+                    <strong>📱 Dashboard Analytics:</strong>
                     <ul>
-                        <li><strong>Unspent Balance:</strong> Your available money remaining this month after subtracting all recorded transactions from your Nett Pay.</li>
-                        <li><strong>Financial Pools:</strong> Real-time balances remaining within your high-level macro categories.</li>
+                        <li><strong>Unspent Balance:</strong> Funds remaining from Nett Pay after all logged transaction expenditures.</li>
+                        <li><strong>Interactive Chart:</strong> Displays current financial pool values. Tap or hover over nodes for precise readouts.</li>
                     </ul>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-title">Monthly Cash Summary</div>
-                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
                     <span style="font-size: 14px; font-weight: 600; color: var(--text-muted);">Unspent Balance</span>
                     <span style="font-size: 28px; font-weight: 800;" id="main-real-balance">0.00 RM</span>
                 </div>
-                <div class="macro-grid">
-                    <div class="macro-block" style="border-top: 3px solid var(--color-needs);">
-                        <div class="macro-label">Needs Pool</div>
-                        <div class="macro-val" id="macro-needs">0.00</div>
-                    </div>
-                    <div class="macro-block" style="border-top: 3px solid var(--color-wants);">
-                        <div class="macro-label">Wants Pool</div>
-                        <div class="macro-val" id="macro-wants">0.00</div>
-                    </div>
-                    <div class="macro-block" style="border-top: 3px solid var(--color-savings);">
-                        <div class="macro-label">Savings Pool</div>
-                        <div class="macro-val" id="macro-savings">0.00</div>
-                    </div>
+                
+                <div class="chart-box-wrapper">
+                    <div id="overview-donut-chart"></div>
                 </div>
+
                 <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; border-top:1px dashed var(--border-color); padding-top:10px;">
                     <span class="text-muted">Total Nett Pay: <span id="lbl-inc-base">0</span> RM</span>
                     <span class="text-muted">Total Spent: <span id="lbl-spent-base">0</span> RM</span>
@@ -371,7 +371,7 @@
             <button class="btn btn-action" onclick="toggleModal('expense-modal', true)">📝 Add New Transaction</button>
 
             <div id="alert-warning-card" class="card card-alert-header" style="display: none; margin-top: 16px;">
-                <div class="card-title" id="alert-box-main-title">⚠️ Budget Alerts &amp; Discrepancies</div>
+                <div class="card-title" id="alert-box-main-title">⚠️ Alerts &amp; Threshold Reminders</div>
                 <div id="alert-items-hook"></div>
             </div>
 
@@ -390,9 +390,8 @@
                 <div id="guide-earning-box" class="guide-box">
                     <strong>💵 Pay &amp; Allocations:</strong>
                     <ul>
-                        <li>Input your Base Salary and include custom lines for dynamic extras like allowances, or statutory reductions (EPF, SOCSO, Tax).</li>
-                        <li>The engine instantly tracks your true take-home <strong>Nett Pay</strong>.</li>
-                        <li>Switch between <strong>Slider Mode</strong> or <strong>Manual Exact RM Input Mode</strong> to distribute targets. If your allocations do not perfectly equal your Nett Pay, an active tracking reminder will show the unallocated difference.</li>
+                        <li>Input your Base Salary and include custom lines for dynamic extras or deductions.</li>
+                        <li>Switch between <strong>Slider Mode</strong> or <strong>Manual Input Mode</strong> to distribute targets across category pools.</li>
                     </ul>
                 </div>
             </div>
@@ -414,7 +413,7 @@
                 <div id="allowances-container"></div>
 
                 <div style="margin-top:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:13px; font-weight:700; color:var(--color-alert);">➖ Deductions (EPF, SOCSO, Taxes)</span>
+                    <span style="font-size:13px; font-weight:700; color:var(--color-alert);">➖ Deductions (EPF, Tax)</span>
                     <button class="btn-minor" style="padding: 4px 10px;" onclick="addPayrollRow('deduction', '', 0)">+ Add Row</button>
                 </div>
                 <div id="deductions-container"></div>
@@ -430,21 +429,20 @@
                     <span>Core Allocation Target Ratios</span>
                     <button id="btn-toggle-ratio-mode" class="btn-minor" onclick="toggleRatioInputMode()">⌨️ Switch to Manual Input</button>
                 </div>
-                <p style="font-size:12px; color:var(--text-muted); margin-top:-4px; margin-bottom:16px;">Distribute how your take-home pay maps out across major category pools.</p>
                 
                 <div id="allocation-discrepancy-banner" style="display:none; padding:10px; border-radius:8px; font-size:13px; font-weight:700; margin-bottom:16px; text-align:center;"></div>
 
                 <div id="ratio-sliders-container">
                     <div class="input-group">
-                        <div class="slider-meta-row c-needs"><span>Needs Budget Limit:</span><span id="v-pct-needs">0% (0.00 RM)</span></div>
+                        <div class="slider-meta-row c-needs" style="display:flex; justify-content:space-between; font-size:14px; font-weight:700; margin-bottom:4px;"><span>Needs Budget Limit:</span><span id="v-pct-needs">0% (0.00 RM)</span></div>
                         <input type="range" id="sl-needs" min="0" max="100" value="0" oninput="balanceRatios('needs')">
                     </div>
                     <div class="input-group">
-                        <div class="slider-meta-row c-wants"><span>Wants Budget Limit:</span><span id="v-pct-wants">0% (0.00 RM)</span></div>
+                        <div class="slider-meta-row c-wants" style="display:flex; justify-content:space-between; font-size:14px; font-weight:700; margin-bottom:4px;"><span>Wants Budget Limit:</span><span id="v-pct-wants">0% (0.00 RM)</span></div>
                         <input type="range" id="sl-wants" min="0" max="100" value="0" oninput="balanceRatios('wants')">
                     </div>
                     <div class="input-group">
-                        <div class="slider-meta-row c-savings"><span>Savings Budget Target:</span><span id="v-pct-savings">0% (0.00 RM)</span></div>
+                        <div class="slider-meta-row c-savings" style="display:flex; justify-content:space-between; font-size:14px; font-weight:700; margin-bottom:4px;"><span>Savings Budget Target:</span><span id="v-pct-savings">0% (0.00 RM)</span></div>
                         <input type="range" id="sl-savings" min="0" max="100" value="0" oninput="balanceRatios('savings')">
                     </div>
                 </div>
@@ -469,15 +467,14 @@
         <div id="page-expenses" class="app-view">
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
-                    Expenses Guide
+                    Expenses &amp; Goals Guide
                     <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-expenses-box')">Help</button>
                 </div>
                 <div id="guide-expenses-box" class="guide-box">
-                    <strong>⚙️ Dynamic Custom Budgets:</strong>
+                    <strong>⚙️ Budgets, Recurring Bills, &amp; Long-term Milestones:</strong>
                     <ul>
-                        <li>Create dynamic trackers mapped to Needs, Wants, or Savings buckets (e.g., Petrol, Dining Out).</li>
-                        <li>Assign fixed limits to track sub-category boundaries.</li>
-                        <li><strong>Early Warning Limits:</strong> Assign an optional progress warning threshold (e.g., 50%). Finagement triggers a dashboard warning when spending matches that marker before hitting hard over-budget states.</li>
+                        <li><strong>Recurring Checkbox:</strong> Marks tracking rules to persist automatically across subsequent monthly rolls.</li>
+                        <li><strong>Savings Goals Engine:</strong> Create milestones (e.g., Emergency Fund) that pull funds incrementally from your monthly macro savings allocation.</li>
                     </ul>
                 </div>
             </div>
@@ -498,26 +495,46 @@
                 </div>
                 <div class="input-group">
                     <label>Budget Label Name</label>
-                    <input type="text" id="cfg-item-name" placeholder="e.g., Petrol, Rent, Groceries">
+                    <input type="text" id="cfg-item-name" placeholder="e.g., Petrol, Insurance, Rent">
                 </div>
                 <div class="input-group">
                     <label>Monthly Budget Amount (RM)</label>
                     <input type="number" id="cfg-item-cap" placeholder="e.g., 500">
                 </div>
                 
+                <div class="input-group">
+                    <div class="checkbox-container" style="background: rgba(0,0,0,0.02); padding: 10px; border-radius:8px; border: 1px solid var(--border-color);">
+                        <input type="checkbox" id="cfg-item-recurring">
+                        <label for="cfg-item-recurring">🔄 Mark as Fixed Recurring Monthly Commitment</label>
+                    </div>
+                </div>
+
                 <div class="input-group" style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
                     <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span>⚠️ Custom Warning Threshold Milestone</span>
                         <span id="cfg-warning-label" style="color: var(--color-wants); font-weight: 700;">Disabled (100%)</span>
                     </label>
                     <input type="range" id="cfg-warning-pct" min="10" max="100" value="100" step="5" oninput="updateFormWarningLabel()">
-                    <p style="font-size:11px; color:var(--text-muted); margin: 6px 0 0 0;">Flags an early status notification when spending clears this percentage of the total allotment.</p>
                 </div>
 
                 <div style="display: flex; gap: 8px;">
                     <button class="btn btn-primary" style="flex: 2;" onclick="commitCustomBudgetItem()">Save Budget Item</button>
                     <button id="btn-cancel-budget-edit" class="btn" style="flex: 1; background: var(--border-color); color: var(--text-main); display: none;" onclick="clearBudgetForm()">Cancel</button>
                 </div>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--color-savings);">
+                <div class="card-title">🎯 Dedicated Long-Term Savings Goals</div>
+                
+                <div style="background: rgba(0,0,0,0.02); padding: 12px; border-radius: 10px; margin-bottom: 14px; border: 1px solid var(--border-color);">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+                        <input type="text" id="goal-input-name" placeholder="Goal (e.g., Workspace Upgrade)">
+                        <input type="number" id="goal-input-target" placeholder="Target Amount (RM)">
+                    </div>
+                    <button class="btn btn-minor" style="width:100%; border-radius:8px;" onclick="commitLongTermSavingsGoal()">Create Long-Term Savings Goal</button>
+                </div>
+                
+                <div id="savings-goals-progress-hook"></div>
             </div>
 
             <div class="card">
@@ -551,11 +568,9 @@
                     <button class="guide-toggle-btn" onclick="toggleGuideBlock('guide-debts-box')">Help</button>
                 </div>
                 <div id="guide-debts-box" class="guide-box">
-                    <strong>💳 Amortization &amp; Liability Registry:</strong>
+                    <strong>💳 Liability Registry:</strong>
                     <ul>
-                        <li>Log long-term liability lines to track overall total outstanding liabilities.</li>
-                        <li>Check "Auto-populate" to instantly append an equivalent tracking budget line item inside your <strong>Needs</strong> dashboard loops.</li>
-                        <li>Click <strong>Pay</strong> inside your active lists to process rapid transaction record allocations.</li>
+                        <li>Log outstanding liability parameters. Check "Auto-populate" to bind dynamic milestone items directly inside your monthly loops.</li>
                     </ul>
                 </div>
             </div>
@@ -652,10 +667,11 @@
     const monthsArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let currentMonthKey = `${monthsArray[activeMonthNum - 1]} ${activeYear}`;
 
-    let localEngine = { months: {}, debts: [], hasSeenTutorial: false };
+    // GLOBAL STATE DATABASE MODEL COMPATIBLE WITH HISTORICAL STRUCTURAL REGISTRIES
+    let localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
     let currentRatioInputMode = "slider";
+    let apexDonutChartInstance = null;
 
-    // CORE REFRESH BALANCER LOOP: Checks for active user sessions in storage before rendering auth cards
     window.addEventListener('DOMContentLoaded', () => {
         const structuralCachedCreds = sessionStorage.getItem('finagement_creds');
         const structuralCachedEngine = sessionStorage.getItem('finagement_engine');
@@ -663,6 +679,7 @@
         if (structuralCachedCreds && structuralCachedEngine) {
             activeUserCreds = JSON.parse(structuralCachedCreds);
             localEngine = JSON.parse(structuralCachedEngine);
+            if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
             
             document.getElementById('profile-username-lbl').textContent = activeUserCreds.username;
             document.getElementById('login-screen').style.display = "none";
@@ -690,7 +707,7 @@
         const signupBtn = document.getElementById('btn-signup');
 
         if(!userField || !passField) {
-            errElement.textContent = "Please fill in all input configuration parameters.";
+            errElement.textContent = "Please fill in all field parameters.";
             errElement.style.display = "block";
             return;
         }
@@ -699,7 +716,7 @@
         signupBtn.textContent = "Creating profile...";
         errElement.style.display = "none";
 
-        const baseFreshPayload = { months: {}, debts: [], hasSeenTutorial: false };
+        const baseFreshPayload = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
 
         try {
             const response = await fetch(CLOUD_API_URL, {
@@ -714,7 +731,7 @@
             });
             const result = await response.json();
             if(result.success) {
-                alert("Account created successfully! Directing to authentication panel.");
+                alert("Account created successfully! Proceeding to log in.");
                 toggleAuthForms(false);
                 document.getElementById('login-user').value = userField;
             } else {
@@ -722,7 +739,7 @@
                 errElement.style.display = "block";
             }
         } catch (err) {
-            errElement.textContent = "Network error. Connection sequence failure.";
+            errElement.textContent = "Network error. Connection failed.";
             errElement.style.display = "block";
         } finally {
             signupBtn.disabled = false;
@@ -761,10 +778,10 @@
                 if (result.data && result.data.trim() !== "") {
                     localEngine = JSON.parse(result.data);
                 } else {
-                    localEngine = { months: {}, debts: [], hasSeenTutorial: false };
+                    localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
                 }
+                if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
 
-                // Caching parameters inside session buffers to prevent page refresh logouts
                 sessionStorage.setItem('finagement_creds', JSON.stringify(activeUserCreds));
                 sessionStorage.setItem('finagement_engine', JSON.stringify(localEngine));
 
@@ -775,7 +792,7 @@
                 showLoginError(result.message || "Invalid account matching profiles.");
             }
         } catch (err) {
-            showLoginError("Cloud link execution failure loop.");
+            showLoginError("Cloud linkage execution failure loop.");
         } finally {
             loginBtn.disabled = false;
             loginBtn.textContent = "Sign In";
@@ -789,10 +806,12 @@
 
     function executeApplicationLogout() {
         activeUserCreds = { username: "", password: "" };
-        localEngine = { months: {}, debts: [], hasSeenTutorial: false };
+        localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
         
         sessionStorage.removeItem('finagement_creds');
         sessionStorage.removeItem('finagement_engine');
+        
+        if (apexDonutChartInstance) { apexDonutChartInstance.destroy(); apexDonutChartInstance = null; }
         
         toggleModal('profile-modal', false);
         document.getElementById('app-wrapper').style.display = "none";
@@ -801,7 +820,9 @@
 
     function executeThemeSwitchToggle() {
         const cur = document.documentElement.getAttribute('data-theme');
-        document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+        const nxt = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nxt);
+        setTimeout(() => { if (apexDonutChartInstance) renderDashboardView(); }, 50);
     }
 
     async function triggerCloudSync() {
@@ -837,19 +858,25 @@
 
     function initSpecificMonthSchema(key) {
         if (!localEngine.months[key]) {
+            // AUTOMATED FIXED RECURRING COMMITMENTS INGESTION PASSTHROUGH LOOP
+            let inheritedBudgets = [];
+            Object.keys(localEngine.months).forEach(oldKey => {
+                if (localEngine.months[oldKey].budgets) {
+                    localEngine.months[oldKey].budgets.forEach(b => {
+                        if (b.recurring && !inheritedBudgets.some(x => x.name.toLowerCase() === b.name.toLowerCase())) {
+                            inheritedBudgets.push({ group: b.group, name: b.name, cap: b.cap, warningPct: b.warningPct || 100, recurring: true });
+                        }
+                    });
+                }
+            });
+
             localEngine.months[key] = {
                 income: 0,
                 payroll: { basic: 0, allowances: [], deductions: [] },
                 percentages: { needs: 0, wants: 0, savings: 0 },
-                budgets: [],
+                budgets: inheritedBudgets,
                 expenses: []
             };
-        }
-        if(!localEngine.months[key].payroll) {
-            localEngine.months[key].payroll = { basic: localEngine.months[key].income || 0, allowances: [], deductions: [] };
-        }
-        if(localEngine.months[key].inputMode) {
-            currentRatioInputMode = localEngine.months[key].inputMode;
         }
     }
 
@@ -889,7 +916,7 @@
 
         calculatePayrollNettOutput(false); 
         clearBudgetForm(); clearDebtForm(); updateSliderLabels();
-        renderDashboardView(); renderExpenseDetailsTable(); renderAnnualPerformanceGrid();
+        renderDashboardView(); renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); renderSavingsGoalsTrackers();
     }
 
     function addPayrollRow(type, initialName = '', initialVal = 0) {
@@ -897,81 +924,55 @@
         const rowDiv = document.createElement('div');
         rowDiv.className = 'payroll-item-row';
         rowDiv.innerHTML = `
-            <input type="text" placeholder="${type === 'allowance' ? 'e.g., Bonus' : 'e.g., Tax Deduction'}" value="${initialName}" oninput="syncPayrollStateData()">
+            <input type="text" placeholder="${type === 'allowance' ? 'e.g., Bonus' : 'e.g., Tax'}" value="${initialName}" oninput="syncPayrollStateData()">
             <input type="number" placeholder="RM" value="${initialVal || ''}" oninput="syncPayrollStateData()">
             <button class="btn-trash" style="padding:4px;" onclick="this.parentElement.remove(); syncPayrollStateData();">✕</button>
         `;
         container.appendChild(rowDiv);
     }
 
-    function syncPayrollStateData() {
-        calculatePayrollNettOutput(true);
-    }
+    function syncPayrollStateData() { calculatePayrollNettOutput(true); }
 
     function calculatePayrollNettOutput(shouldSaveToDatabase = true) {
         const state = localEngine.months[currentMonthKey];
         const basicSalary = parseFloat(document.getElementById('pay-basic-salary').value) || 0;
         state.payroll.basic = basicSalary;
 
-        let totalAllowances = 0;
-        state.payroll.allowances = [];
+        let totalAllowances = 0; state.payroll.allowances = [];
         document.querySelectorAll('#allowances-container .payroll-item-row').forEach(row => {
-            const inputs = row.querySelectorAll('input');
-            const name = inputs[0].value.trim();
-            const val = parseFloat(inputs[1].value) || 0;
-            if(name || val) {
-                state.payroll.allowances.push({ name, value: val });
-                totalAllowances += val;
-            }
+            const inputs = row.querySelectorAll('input'); const name = inputs[0].value.trim(); const val = parseFloat(inputs[1].value) || 0;
+            if(name || val) { state.payroll.allowances.push({ name, value: val }); totalAllowances += val; }
         });
 
-        let totalDeductions = 0;
-        state.payroll.deductions = [];
+        let totalDeductions = 0; state.payroll.deductions = [];
         document.querySelectorAll('#deductions-container .payroll-item-row').forEach(row => {
-            const inputs = row.querySelectorAll('input');
-            const name = inputs[0].value.trim();
-            const val = parseFloat(inputs[1].value) || 0;
-            if(name || val) {
-                state.payroll.deductions.push({ name, value: val });
-                totalDeductions += val;
-            }
+            const inputs = row.querySelectorAll('input'); const name = inputs[0].value.trim(); const val = parseFloat(inputs[1].value) || 0;
+            if(name || val) { state.payroll.deductions.push({ name, value: val }); totalDeductions += val; }
         });
 
-        const derivedNettPay = (basicSalary + totalAllowances) - totalDeductions;
-        state.income = derivedNettPay; 
-
-        document.getElementById('computed-nett-label').textContent = derivedNettPay.toLocaleString('en-US', {minimumFractionDigits:2}) + ' RM';
+        state.income = (basicSalary + totalAllowances) - totalDeductions; 
+        document.getElementById('computed-nett-label').textContent = state.income.toLocaleString('en-US', {minimumFractionDigits:2}) + ' RM';
         
         if (currentRatioInputMode === "manual") {
             processManualRatioInputs(shouldSaveToDatabase);
         } else {
-            updateSliderLabels();
-            calculateUnallocatedDrift();
-            if(shouldSaveToDatabase) commitDatabase();
+            updateSliderLabels(); calculateUnallocatedDrift(); if(shouldSaveToDatabase) commitDatabase();
         }
     }
 
     function triggerManualPreviousMonthPayrollCopy() {
-        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); 
-        if(currentMonthIdx <= 0) return alert("No ledger background sequence history detected for past iterations.");
-        
-        const targetKey = `${monthsArray[currentMonthIdx - 1]} ${activeYear}`; 
-        const source = localEngine.months[targetKey];
-        
-        if(!source || !source.payroll || (!source.payroll.basic && source.payroll.allowances.length === 0 && source.payroll.deductions.length === 0)) {
-            return alert(`No income structures discovered inside history mapping files for ${targetKey}`);
-        }
+        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); if(currentMonthIdx <= 0) return alert("No ledger background history detected.");
+        const targetKey = `${monthsArray[currentMonthIdx - 1]} ${activeYear}`; const source = localEngine.months[targetKey];
+        if(!source || !source.payroll) return alert(`No record structures mapped for ${targetKey}`);
 
-        if(!confirm(`Overwrite current entries and import your income parameters from ${targetKey}?`)) return;
-
+        if(!confirm(`Overwrite current configurations and import income profiles from ${targetKey}?`)) return;
         const state = localEngine.months[currentMonthKey];
         state.payroll = JSON.parse(JSON.stringify(source.payroll));
         state.percentages = JSON.parse(JSON.stringify(source.percentages));
         state.manualAllocations = JSON.parse(JSON.stringify(source.manualAllocations || {needs:0, wants:0, savings:0}));
         state.inputMode = source.inputMode || "slider";
         
-        currentRatioInputMode = state.inputMode;
-        enforceRatioUIVisualState();
+        currentRatioInputMode = state.inputMode; enforceRatioUIVisualState();
 
         document.getElementById('pay-basic-salary').value = state.payroll.basic || "";
         document.getElementById('sl-needs').value = state.percentages.needs || 0;
@@ -983,21 +984,14 @@
         document.getElementById('num-exact-savings').value = state.manualAllocations.savings || "";
 
         calculatePayrollNettOutput(true);
-        alert(`Income structures successfully synchronized from ${targetKey}!`);
     }
 
     function bootStateEngine() {
-        buildGlobalMonthNavigationDropdown();
-        executeMonthNavigationShift();
+        buildGlobalMonthNavigationDropdown(); executeMonthNavigationShift();
         document.getElementById('new-user-walkthrough-panel').style.display = localEngine.hasSeenTutorial !== true ? "block" : "none";
     }
 
-    function dismissOnboardingTutorial() {
-        localEngine.hasSeenTutorial = true;
-        document.getElementById('new-user-walkthrough-panel').style.display = "none";
-        commitDatabase();
-    }
-
+    function dismissOnboardingTutorial() { localEngine.hasSeenTutorial = true; document.getElementById('new-user-walkthrough-panel').style.display = "none"; commitDatabase(); }
     function commitDatabase() { triggerCloudSync(); }
 
     function navigatePage(targetId, navButton) {
@@ -1006,38 +1000,26 @@
         document.getElementById('page-' + targetId).classList.add('active');
         navButton.classList.add('active');
         if (targetId === 'overview') renderDashboardView();
-        if (targetId === 'expenses') { renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); }
+        if (targetId === 'expenses') { renderExpenseDetailsTable(); renderAnnualPerformanceGrid(); renderSavingsGoalsTrackers(); }
         if (targetId === 'earning') { updateSliderLabels(); calculateUnallocatedDrift(); }
         if (targetId === 'debts') renderDebtTrackerLedger();
     }
 
     function toggleModal(modalId, displayToggle) {
         const modal = document.getElementById(modalId);
-        if(displayToggle) { 
-            modal.classList.add('show'); 
-            if(modalId === 'expense-modal') populatePresetSelectors(); 
-        } else { 
-            modal.classList.remove('show'); 
-        }
+        if(displayToggle) { modal.classList.add('show'); if(modalId === 'expense-modal') populatePresetSelectors(); } else { modal.classList.remove('show'); }
     }
 
     function populatePresetSelectors() {
         document.getElementById('log-date-field').valueAsDate = new Date();
-        const selector = document.getElementById('log-preset-selector');
-        selector.innerHTML = '';
+        const selector = document.getElementById('log-preset-selector'); selector.innerHTML = '';
         const currentBudgets = localEngine.months[currentMonthKey].budgets;
-        
-        if(currentBudgets.length === 0) {
-            selector.innerHTML = '<option>No dynamic presets found! Define your custom targets inside Expenses.</option>'; return;
-        }
-        currentBudgets.forEach(b => {
-            let opt = document.createElement('option'); opt.value = b.name; opt.textContent = `[${b.group}] - ${b.name}`; selector.appendChild(opt);
-        });
+        if(currentBudgets.length === 0) { selector.innerHTML = '<option>Create target categories under the Expenses tab first.</option>'; return; }
+        currentBudgets.forEach(b => { let opt = document.createElement('option'); opt.value = b.name; opt.textContent = `[${b.group}] - ${b.name}`; selector.appendChild(opt); });
     }
 
     function recalculateDebtPaymentsFromLogFeeds() {
-        if(!localEngine.debts) return;
-        localEngine.debts.forEach(d => { d.paid = 0; });
+        if(!localEngine.debts) return; localEngine.debts.forEach(d => { d.paid = 0; });
         Object.keys(localEngine.months).forEach(mKey => {
             if(localEngine.months[mKey].expenses) {
                 localEngine.months[mKey].expenses.forEach(exp => {
@@ -1048,51 +1030,53 @@
         });
     }
 
+    // HIGH PERFORMANCE INTERACTIVE APEXCHARTS INITIALIZATION & UPDATE INTERFACE ENGINE
     function renderDashboardView() {
         recalculateDebtPaymentsFromLogFeeds();
         const state = localEngine.months[currentMonthKey];
         let totalDisbursed = 0; let itemSpendingAccumulator = {};
         state.expenses.forEach(e => { totalDisbursed += e.cost; itemSpendingAccumulator[e.item] = (itemSpendingAccumulator[e.item] || 0) + e.cost; });
-        let remainingBalance = state.income - totalDisbursed;
         
-        document.getElementById('main-real-balance').textContent = remainingBalance.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' RM';
+        document.getElementById('main-real-balance').textContent = (state.income - totalDisbursed).toLocaleString('en-US', {minimumFractionDigits: 2}) + ' RM';
         document.getElementById('lbl-inc-base').textContent = state.income.toLocaleString('en-US', {minimumFractionDigits: 2});
         document.getElementById('lbl-spent-base').textContent = totalDisbursed.toLocaleString('en-US', {minimumFractionDigits: 2});
         
         let poolNeeds = 0, poolWants = 0, poolSavings = 0;
         if(state.inputMode === "manual" && state.manualAllocations) {
-            poolNeeds = state.manualAllocations.needs || 0;
-            poolWants = state.manualAllocations.wants || 0;
-            poolSavings = state.manualAllocations.savings || 0;
+            poolNeeds = state.manualAllocations.needs || 0; poolWants = state.manualAllocations.wants || 0; poolSavings = state.manualAllocations.savings || 0;
         } else {
-            poolNeeds = state.income * ((state.percentages?.needs || 0) / 100);
-            poolWants = state.income * ((state.percentages?.wants || 0) / 100);
-            poolSavings = state.income * ((state.percentages?.savings || 0) / 100);
+            poolNeeds = state.income * ((state.percentages?.needs || 0) / 100); poolWants = state.income * ((state.percentages?.wants || 0) / 100); poolSavings = state.income * ((state.percentages?.savings || 0) / 100);
         }
 
-        document.getElementById('macro-needs').textContent = poolNeeds.toFixed(0) + ' RM';
-        document.getElementById('macro-wants').textContent = poolWants.toFixed(0) + ' RM';
-        document.getElementById('macro-savings').textContent = poolSavings.toFixed(0) + ' RM';
+        // COMPILE APEXCHARTS RADIAL METRIC DATA ARRAY CONFIGURATIONS
+        const isDarkUi = document.documentElement.getAttribute('data-theme') === 'dark';
+        const chartDataOptions = {
+            series: [parseFloat(poolNeeds.toFixed(2)), parseFloat(poolWants.toFixed(2)), parseFloat(poolSavings.toFixed(2))],
+            chart: { type: 'donut', height: 240, fontFamily: 'inherit' },
+            labels: ['Needs Pool', 'Wants Pool', 'Savings Pool'],
+            colors: ['#007AFF', '#FF9500', '#34C759'],
+            legend: { position: 'bottom', labels: { colors: isDarkUi ? '#F8FAFC' : '#1D2129' } },
+            dataLabels: { enabled: false },
+            stroke: { colors: [isDarkUi ? '#1E293B' : '#FFFFFF'] },
+            plotOptions: { pie: { donut: { labels: { show: true, name: { color: isDarkUi ? '#94A3B8' : '#656E7B' }, value: { color: isDarkUi ? '#F8FAFC' : '#1D2129', formatter: (v) => `${parseFloat(v).toLocaleString()} RM` }, total: { show: true, label: 'Allocated', color: isDarkUi ? '#94A3B8' : '#656E7B', formatter: (w) => `${w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString()} RM` } } } } }
+        };
+
+        if (apexDonutChartInstance) {
+            apexDonutChartInstance.updateOptions(chartDataOptions);
+        } else {
+            apexDonutChartInstance = new ApexCharts(document.getElementById('overview-donut-chart'), chartDataOptions);
+            apexDonutChartInstance.render();
+        }
 
         const alertCardElement = document.getElementById('alert-warning-card');
         const alertItemsHook = document.getElementById('alert-items-hook');
-        alertItemsHook.innerHTML = ''; 
-        let triggerAlertFlag = false;
+        alertItemsHook.innerHTML = ''; let triggerAlertFlag = false;
 
         let calculatedDrift = state.income - (poolNeeds + poolWants + poolSavings);
         if (Math.abs(calculatedDrift) >= 0.01) {
             triggerAlertFlag = true;
-            let wrapper = document.createElement('div');
-            wrapper.className = 'budget-progress-item';
-            wrapper.style.borderBottom = '1px dashed rgba(0,0,0,0.1)';
-            wrapper.style.paddingBottom = '10px';
-            wrapper.innerHTML = `
-                <div class="progress-meta warning-text-color">
-                    <span class="u-bold">⚠️ Core Allocation Discrepancy</span>
-                    <span>${calculatedDrift > 0 ? 'Unallocated' : 'Overallocated'}: ${Math.abs(calculatedDrift).toFixed(2)} RM</span>
-                </div>
-                <div style="font-size:11px; color:var(--text-muted);">Your combined allocation totals do not match your take-home pay. Review parameters inside the Income tab.</div>
-            `;
+            let wrapper = document.createElement('div'); wrapper.className = 'budget-progress-item';
+            wrapper.innerHTML = `<div class="progress-meta warning-text-color"><span class="u-bold">⚠️ Target Discrepancy</span><span>${calculatedDrift > 0 ? 'Unallocated' : 'Overallocated'}: ${Math.abs(calculatedDrift).toFixed(2)} RM</span></div>`;
             alertItemsHook.appendChild(wrapper);
         }
 
@@ -1102,25 +1086,14 @@
             const structuralThresholdValue = b.cap * (customWarnPct / 100);
 
             if (expenseSpent > b.cap) {
-                triggerAlertFlag = true; 
-                const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
-                let wrapper = document.createElement('div'); 
-                wrapper.className = 'budget-progress-item';
-                wrapper.innerHTML = `<div class="progress-meta alert-text-color"><span>🚨 ${b.name} <small style="color:var(--text-muted); font-weight:500;">(${b.group})</small></span><span>Over limit by ${(expenseSpent - b.cap).toFixed(2)} RM</span></div><div class="progress-bar"><div class="progress-fill alert-bg-bar" style="width: ${utilizationPct}%;"></div></div>`;
+                triggerAlertFlag = true; const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
+                let wrapper = document.createElement('div'); wrapper.className = 'budget-progress-item';
+                wrapper.innerHTML = `<div class="progress-meta alert-text-color"><span>🚨 ${b.name} (${b.group})</span><span>Over limit by ${(expenseSpent - b.cap).toFixed(2)} RM</span></div><div class="progress-bar"><div class="progress-fill alert-bg-bar" style="width: ${utilizationPct}%;"></div></div>`;
                 alertItemsHook.appendChild(wrapper);
-            } 
-            else if (customWarnPct < 100 && expenseSpent >= structuralThresholdValue && expenseSpent > 0) {
-                triggerAlertFlag = true;
-                const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
-                let wrapper = document.createElement('div');
-                wrapper.className = 'budget-progress-item';
-                wrapper.innerHTML = `
-                    <div class="progress-meta warning-text-color">
-                        <span>⚠️ ${b.name} <small style="color:var(--text-muted); font-weight:500;">(${b.group})</small></span>
-                        <span>Cleared ${customWarnPct}% Alert Milestone (${expenseSpent.toFixed(2)} / ${b.cap.toFixed(0)} RM)</span>
-                    </div>
-                    <div class="progress-bar"><div class="progress-fill warning-bg-bar" style="width: ${utilizationPct}%;"></div></div>
-                `;
+            } else if (customWarnPct < 100 && expenseSpent >= structuralThresholdValue && expenseSpent > 0) {
+                triggerAlertFlag = true; const utilizationPct = Math.min((expenseSpent / b.cap) * 100, 100);
+                let wrapper = document.createElement('div'); wrapper.className = 'budget-progress-item';
+                wrapper.innerHTML = `<div class="progress-meta warning-text-color"><span>⚠️ ${b.name} (${b.group})</span><span>Threshold Milestone Crossed (${expenseSpent.toFixed(2)} / ${b.cap.toFixed(0)} RM)</span></div><div class="progress-bar"><div class="progress-fill warning-bg-bar" style="width: ${utilizationPct}%;"></div></div>`;
                 alertItemsHook.appendChild(wrapper);
             }
         });
@@ -1128,7 +1101,7 @@
         alertCardElement.style.display = triggerAlertFlag ? 'block' : 'none';
 
         const logsHook = document.getElementById('overview-logs-hook'); logsHook.innerHTML = '';
-        if(!state.expenses.length) { logsHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No entries recorded.</div>'; } 
+        if(!state.expenses.length) { logsHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No entries found.</div>'; } 
         else {
             state.expenses.slice().reverse().forEach(e => {
                 let logRow = document.createElement('div'); logRow.className = 'ledger-row';
@@ -1139,12 +1112,10 @@
     }
 
     function submitDailyExpenseEntry() {
-        const date = document.getElementById('log-date-field').value;
-        const itemName = document.getElementById('log-preset-selector').value;
-        const costValue = parseFloat(document.getElementById('log-amount-field').value);
-        if (!date || !itemName || isNaN(costValue) || costValue <= 0) return alert("Verify logging parameters validation rules.");
+        const date = document.getElementById('log-date-field').value; const itemName = document.getElementById('log-preset-selector').value; const costValue = parseFloat(document.getElementById('log-amount-field').value);
+        if (!date || !itemName || isNaN(costValue) || costValue <= 0) return alert("Verify logging parameter data fields.");
         const targetPreset = localEngine.months[currentMonthKey].budgets.find(b => b.name === itemName);
-        if(!targetPreset) return alert("Verify core allocation matrix paths.");
+        if(!targetPreset) return alert("Allocation path validation error.");
         localEngine.months[currentMonthKey].expenses.push({ id: Date.now(), date, item: itemName, group: targetPreset.group, cost: costValue });
         commitDatabase(); renderDashboardView(); toggleModal('expense-modal', false); document.getElementById('log-amount-field').value = '';
     }
@@ -1153,9 +1124,7 @@
 
     function toggleRatioInputMode() {
         currentRatioInputMode = (currentRatioInputMode === "slider") ? "manual" : "slider";
-        localEngine.months[currentMonthKey].inputMode = currentRatioInputMode;
-        
-        enforceRatioUIVisualState();
+        localEngine.months[currentMonthKey].inputMode = currentRatioInputMode; enforceRatioUIVisualState();
         
         if (currentRatioInputMode === "manual") {
             const state = localEngine.months[currentMonthKey];
@@ -1171,26 +1140,14 @@
             document.getElementById('num-exact-savings').value = state.manualAllocations.savings || "";
             processManualRatioInputs(true);
         } else {
-            updateSliderLabels();
-            calculateUnallocatedDrift();
-            commitDatabase();
+            updateSliderLabels(); calculateUnallocatedDrift(); commitDatabase();
         }
     }
 
     function enforceRatioUIVisualState() {
-        const sliderBox = document.getElementById('ratio-sliders-container');
-        const manualBox = document.getElementById('ratio-manual-container');
-        const toggleBtn = document.getElementById('btn-toggle-ratio-mode');
-
-        if (currentRatioInputMode === "manual") {
-            sliderBox.style.display = "none";
-            manualBox.style.display = "block";
-            toggleBtn.textContent = "🎛️ Switch to Sliders";
-        } else {
-            sliderBox.style.display = "block";
-            manualBox.style.display = "none";
-            toggleBtn.textContent = "⌨️ Switch to Manual Input";
-        }
+        const sliderBox = document.getElementById('ratio-sliders-container'); const manualBox = document.getElementById('ratio-manual-container'); const toggleBtn = document.getElementById('btn-toggle-ratio-mode');
+        if (currentRatioInputMode === "manual") { sliderBox.style.display = "none"; manualBox.style.display = "block"; toggleBtn.textContent = "🎛️ Switch to Sliders"; } 
+        else { sliderBox.style.display = "block"; manualBox.style.display = "none"; toggleBtn.textContent = "⌨️ Switch to Manual Input"; }
     }
 
     function processManualRatioInputs(shouldSave = true) {
@@ -1200,64 +1157,36 @@
         const sVal = parseFloat(document.getElementById('num-exact-savings').value) || 0;
 
         if(!state.manualAllocations) state.manualAllocations = {};
-        state.manualAllocations.needs = nVal;
-        state.manualAllocations.wants = wVal;
-        state.manualAllocations.savings = sVal;
+        state.manualAllocations.needs = nVal; state.manualAllocations.wants = wVal; state.manualAllocations.savings = sVal;
 
         if (state.income > 0) {
-            state.percentages.needs = Math.round((nVal / state.income) * 100);
-            state.percentages.wants = Math.round((wVal / state.income) * 100);
-            state.percentages.savings = Math.round((sVal / state.income) * 100);
+            state.percentages.needs = Math.round((nVal / state.income) * 100); state.percentages.wants = Math.round((wVal / state.income) * 100); state.percentages.savings = Math.round((sVal / state.income) * 100);
         }
-
-        calculateUnallocatedDrift();
-        if(shouldSave) commitDatabase();
+        calculateUnallocatedDrift(); if(shouldSave) commitDatabase();
     }
 
     function calculateUnallocatedDrift() {
-        const state = localEngine.months[currentMonthKey];
-        const banner = document.getElementById('allocation-discrepancy-banner');
-        
+        const state = localEngine.months[currentMonthKey]; const banner = document.getElementById('allocation-discrepancy-banner');
         let allocatedAmount = 0;
-        if (currentRatioInputMode === "manual") {
-            allocatedAmount = (state.manualAllocations?.needs || 0) + (state.manualAllocations?.wants || 0) + (state.manualAllocations?.savings || 0);
-        } else {
-            allocatedAmount = (state.income * ((state.percentages?.needs || 0) / 100)) + (state.income * ((state.percentages?.wants || 0) / 100)) + (state.income * ((state.percentages?.savings || 0) / 100));
-        }
-
+        if (currentRatioInputMode === "manual") { allocatedAmount = (state.manualAllocations?.needs || 0) + (state.manualAllocations?.wants || 0) + (state.manualAllocations?.savings || 0); } 
+        else { allocatedAmount = (state.income * ((state.percentages?.needs || 0) / 100)) + (state.income * ((state.percentages?.wants || 0) / 100)) + (state.income * ((state.percentages?.savings || 0) / 100)); }
         let dynamicDrift = state.income - allocatedAmount;
 
-        if (Math.abs(dynamicDrift) < 0.01) {
-            banner.style.display = "none";
-        } else if (dynamicDrift > 0) {
-            banner.style.display = "block";
-            banner.style.backgroundColor = "rgba(0, 122, 255, 0.1)";
-            banner.style.color = "var(--color-needs)";
-            banner.textContent = `📋 Remaining Unallocated: ${dynamicDrift.toFixed(2)} RM`;
-        } else {
-            banner.style.display = "block";
-            banner.style.backgroundColor = "rgba(255, 59, 48, 0.1)";
-            banner.style.color = "var(--color-alert)";
-            banner.textContent = `⚠️ Warning: Overallocated by ${Math.abs(dynamicDrift).toFixed(2)} RM`;
-        }
+        if (Math.abs(dynamicDrift) < 0.01) { banner.style.display = "none"; } 
+        else if (dynamicDrift > 0) { banner.style.display = "block"; banner.style.backgroundColor = "rgba(0, 122, 255, 0.1)"; banner.style.color = "var(--color-needs)"; banner.textContent = `📋 Remaining Unallocated: ${dynamicDrift.toFixed(2)} RM`; } 
+        else { banner.style.display = "block"; banner.style.backgroundColor = "rgba(255, 59, 48, 0.1)"; banner.style.color = "var(--color-alert)"; banner.textContent = `⚠️ Warning: Overallocated by ${Math.abs(dynamicDrift).toFixed(2)} RM`; }
     }
 
     function updateSliderLabels() {
         const incomeBase = localEngine.months[currentMonthKey].income;
-        const pctNeeds = parseInt(document.getElementById('sl-needs').value) || 0;
-        const pctWants = parseInt(document.getElementById('sl-wants').value) || 0;
-        const pctSavings = parseInt(document.getElementById('sl-savings').value) || 0;
-
+        const pctNeeds = parseInt(document.getElementById('sl-needs').value) || 0; const pctWants = parseInt(document.getElementById('sl-wants').value) || 0; const pctSavings = parseInt(document.getElementById('sl-savings').value) || 0;
         document.getElementById('v-pct-needs').textContent = `${pctNeeds}% (${(incomeBase * (pctNeeds / 100)).toFixed(2)} RM)`;
         document.getElementById('v-pct-wants').textContent = `${pctWants}% (${(incomeBase * (pctWants / 100)).toFixed(2)} RM)`;
         document.getElementById('v-pct-savings').textContent = `${pctSavings}% (${(incomeBase * (pctSavings / 100)).toFixed(2)} RM)`;
     }
 
     function balanceRatios(shiftedFactor) {
-        let n = parseInt(document.getElementById('sl-needs').value) || 0;
-        let w = parseInt(document.getElementById('sl-wants').value) || 0;
-        let s = parseInt(document.getElementById('sl-savings').value) || 0;
-        
+        let n = parseInt(document.getElementById('sl-needs').value) || 0; let w = parseInt(document.getElementById('sl-wants').value) || 0; let s = parseInt(document.getElementById('sl-savings').value) || 0;
         let total = n + w + s; let diff = 100 - total;
         if (diff !== 0) {
             let targets = ['needs', 'wants', 'savings'].filter(t => t !== shiftedFactor);
@@ -1265,39 +1194,33 @@
             let share = Math.round(diff / targets.length);
             targets.forEach((t, idx) => {
                 let el = targetElements[t]; let val = parseInt(el.value) || 0;
-                if (idx === targets.length - 1) {
-                    el.value = Math.max(0, 100 - (parseInt(targetElements[shiftedFactor].value) + targets.slice(0, -1).reduce((acc, curr) => acc + parseInt(targetElements[curr].value), 0)));
-                } else { el.value = Math.max(0, val + share); }
+                if (idx === targets.length - 1) { el.value = Math.max(0, 100 - (parseInt(targetElements[shiftedFactor].value) + targets.slice(0, -1).reduce((acc, curr) => acc + parseInt(targetElements[curr].value), 0))); } 
+                else { el.value = Math.max(0, val + share); }
             });
         }
         updateSliderLabels();
         localEngine.months[currentMonthKey].percentages.needs = parseInt(document.getElementById('sl-needs').value);
         localEngine.months[currentMonthKey].percentages.wants = parseInt(document.getElementById('sl-wants').value);
         localEngine.months[currentMonthKey].percentages.savings = parseInt(document.getElementById('sl-savings').value);
-        calculateUnallocatedDrift();
-        commitDatabase();
+        calculateUnallocatedDrift(); commitDatabase();
     }
 
     function updateFormWarningLabel() {
-        const sliderValue = parseInt(document.getElementById('cfg-warning-pct').value);
-        const displayLabel = document.getElementById('cfg-warning-label');
-        if (sliderValue === 100) {
-            displayLabel.textContent = "Disabled (100%)";
-            displayLabel.style.color = "var(--text-muted)";
-        } else {
-            displayLabel.textContent = `Active at ${sliderValue}%`;
-            displayLabel.style.color = "var(--color-wants)";
-        }
+        const sliderValue = parseInt(document.getElementById('cfg-warning-pct').value); const displayLabel = document.getElementById('cfg-warning-label');
+        if (sliderValue === 100) { displayLabel.textContent = "Disabled (100%)"; displayLabel.style.color = "var(--text-muted)"; } 
+        else { displayLabel.textContent = `Active at ${sliderValue}%`; displayLabel.style.color = "var(--color-wants)"; }
     }
 
+    // EXPENSES TRACKER MANAGER INGESTION OVERHAUL WITH INTEGRATED RECURRING FLAGS
     function commitCustomBudgetItem() {
         const group = document.getElementById('cfg-item-group').value; 
         const name = document.getElementById('cfg-item-name').value.trim(); 
         const cap = parseFloat(document.getElementById('cfg-item-cap').value); 
         const warningPctValue = parseInt(document.getElementById('cfg-warning-pct').value);
+        const isRecurring = document.getElementById('cfg-item-recurring').checked;
         const idx = parseInt(document.getElementById('cfg-editing-index').value);
         
-        if(!name || isNaN(cap) || cap <= 0) return alert("Verify target configuration validation input constraints.");
+        if(!name || isNaN(cap) || cap <= 0) return alert("Verify core allocation parameters constraints.");
         let col = localEngine.months[currentMonthKey].budgets;
         
         if (idx >= 0) {
@@ -1305,13 +1228,13 @@
             if (histName.toLowerCase() !== name.toLowerCase()) { 
                 localEngine.months[currentMonthKey].expenses.forEach(e => { if (e.item.toLowerCase() === histName.toLowerCase()) { e.item = name; e.group = group; } }); 
             }
-            col[idx] = { group, name, cap, warningPct: warningPctValue };
+            col[idx] = { group, name, cap, warningPct: warningPctValue, recurring: isRecurring };
         } else {
             let match = col.find(i => i.name.toLowerCase() === name.toLowerCase()); 
             if (match) { 
-                match.group = group; match.cap = cap; match.warningPct = warningPctValue;
+                match.group = group; match.cap = cap; match.warningPct = warningPctValue; match.recurring = isRecurring;
             } else { 
-                col.push({ group, name, cap, warningPct: warningPctValue }); 
+                col.push({ group, name, cap, warningPct: warningPctValue, recurring: isRecurring }); 
             }
         }
         commitDatabase(); renderExpenseDetailsTable(); clearBudgetForm();
@@ -1323,33 +1246,28 @@
         document.getElementById('cfg-item-group').value = target.group; 
         document.getElementById('cfg-item-name').value = target.name; 
         document.getElementById('cfg-item-cap').value = target.cap;
+        document.getElementById('cfg-item-recurring').checked = target.recurring === true;
         
-        const warningConfigVal = target.warningPct !== undefined ? target.warningPct : 100;
-        document.getElementById('cfg-warning-pct').value = warningConfigVal;
+        document.getElementById('cfg-warning-pct').value = target.warningPct !== undefined ? target.warningPct : 100;
         updateFormWarningLabel();
         
         document.getElementById('budget-form-heading').textContent = "✏️ Editing: " + target.name; 
-        document.getElementById('btn-cancel-budget-edit').style.display = "block"; 
-        document.getElementById('cfg-item-name').focus();
+        document.getElementById('btn-cancel-budget-edit').style.display = "block"; document.getElementById('cfg-item-name').focus();
     }
 
     function clearBudgetForm() { 
-        document.getElementById('cfg-editing-index').value = "-1"; 
-        document.getElementById('cfg-item-name').value = ""; 
-        document.getElementById('cfg-item-cap').value = ""; 
-        document.getElementById('cfg-warning-pct').value = 100;
-        updateFormWarningLabel();
-        document.getElementById('budget-form-heading').textContent = "Create / Update Target Allocations"; 
-        document.getElementById('btn-cancel-budget-edit').style.display = "none"; 
+        document.getElementById('cfg-editing-index').value = "-1"; document.getElementById('cfg-item-name').value = ""; document.getElementById('cfg-item-cap').value = ""; 
+        document.getElementById('cfg-item-recurring').checked = false; document.getElementById('cfg-warning-pct').value = 100; updateFormWarningLabel();
+        document.getElementById('budget-form-heading').textContent = "Create / Update Target Allocations"; document.getElementById('btn-cancel-budget-edit').style.display = "none"; 
     }
 
     function triggerManualPreviousMonthCopy() {
-        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); if(currentMonthIdx <= 0) return alert("No database background logging entries discovered.");
+        const currentMonthIdx = monthsArray.indexOf(currentMonthKey.split(" ")[0]); if(currentMonthIdx <= 0) return alert("No layout structures detected inside database registers.");
         const targetKey = `${monthsArray[currentMonthIdx - 1]} ${activeYear}`; const source = localEngine.months[targetKey];
-        if(!source || !source.budgets || source.budgets.length === 0) return alert(`No history records found for ${targetKey}`);
+        if(!source || !source.budgets || source.budgets.length === 0) return alert(`No record sets found for ${targetKey}`);
         let col = localEngine.months[currentMonthKey].budgets; let added = 0;
         source.budgets.forEach(oldItem => { if (!col.some(curr => curr.name.toLowerCase() === oldItem.name.toLowerCase())) { col.push(JSON.parse(JSON.stringify(oldItem))); added++; } });
-        commitDatabase(); renderExpenseDetailsTable(); alert(`Imported ${added} custom items from ${targetKey}!`);
+        commitDatabase(); renderExpenseDetailsTable(); alert(`Imported ${added} custom paths from ${targetKey}!`);
     }
 
     function renderExpenseDetailsTable() {
@@ -1357,32 +1275,76 @@
         const state = localEngine.months[currentMonthKey]; const filter = document.getElementById('ledger-category-filter').value;
         let itemSpent = {}; state.expenses.forEach(e => { itemSpent[e.item] = (itemSpent[e.item] || 0) + e.cost; });
         let filtered = filter !== 'ALL' ? state.budgets.filter(b => b.group === filter) : state.budgets;
-        if(filtered.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No custom allocation metrics found.</td></tr>`; return; }
+        if(filtered.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No custom items mapped.</td></tr>`; return; }
         filtered.forEach((b) => {
             const trueIdx = state.budgets.findIndex(orig => orig.name === b.name); const actual = itemSpent[b.name] || 0;
             let tableRow = document.createElement('tr'); if (actual > b.cap) tableRow.className = 'alert-text-color';
-            
-            const pctTag = (b.warningPct && b.warningPct < 100) ? ` <small style="color:var(--color-wants); font-weight:bold;">[>${b.warningPct}% Alert]</small>` : '';
-            
-            tableRow.innerHTML = `<td class="row-name">${b.name}${pctTag}</td><td>${b.group}</td><td class="row-budget">${b.cap.toFixed(2)} RM</td><td class="row-actual ${actual > b.cap ? 'alert-text-color' : ''}">${actual.toFixed(2)} RM</td><td class="align-right"><button class="btn-inline-edit" onclick="loadBudgetEditPreset(${trueIdx})">Edit</button><button class="btn-trash" onclick="purgeBudgetItemPreset(${trueIdx})">✕</button></td>`;
+            const flagTags = `${b.recurring ? ' 🔄' : ''}${b.warningPct < 100 ? ' ⚠️' : ''}`;
+            tableRow.innerHTML = `<td class="row-name">${b.name}${flagTags}</td><td>${b.group}</td><td class="row-budget">${b.cap.toFixed(2)} RM</td><td class="row-actual ${actual > b.cap ? 'alert-text-color' : ''}">${actual.toFixed(2)} RM</td><td class="align-right"><button class="btn-inline-edit" onclick="loadBudgetEditPreset(${trueIdx})">Edit</button><button class="btn-trash" onclick="purgeBudgetItemPreset(${trueIdx})">✕</button></td>`;
             tableBody.appendChild(tableRow);
         });
     }
 
-    function purgeBudgetItemPreset(index) { if(confirm("Delete this budget tracking profile completely?")) { localEngine.months[currentMonthKey].budgets.splice(index, 1); commitDatabase(); renderExpenseDetailsTable(); } }
+    function purgeBudgetItemPreset(index) { if(confirm("Delete this metric template entirely?")) { localEngine.months[currentMonthKey].budgets.splice(index, 1); commitDatabase(); renderExpenseDetailsTable(); } }
 
     function renderAnnualPerformanceGrid() {
-        const hook = document.getElementById('annual-matrix-hook'); hook.innerHTML = '';
-        let inc = 0; let spent = 0;
+        const hook = document.getElementById('annual-matrix-hook'); hook.innerHTML = ''; let inc = 0; let spent = 0;
         Object.keys(localEngine.months).forEach(k => { inc += localEngine.months[k].income; if(localEngine.months[k].expenses) { localEngine.months[k].expenses.forEach(e => { spent += e.cost; }); } });
         let inner = document.createElement('div'); inner.className = 'macro-grid'; inner.style.marginTop = '10px';
         inner.innerHTML = `<div class="macro-block"><div class="macro-label">YTD Income</div><div class="macro-val">${inc.toLocaleString()} RM</div></div><div class="macro-block"><div class="macro-label">YTD Spent</div><div class="macro-val">${spent.toLocaleString()} RM</div></div><div class="macro-block"><div class="macro-label">YTD Savings</div><div class="macro-val c-savings">${(inc - spent).toLocaleString()} RM</div></div>`;
         hook.appendChild(inner);
     }
 
+    // MULTI-TIER LONG TERM SAVINGS TARGET MANAGEMENT CORE ENGINE
+    function commitLongTermSavingsGoal() {
+        const nameEl = document.getElementById('goal-input-name'); const targetEl = document.getElementById('goal-input-target');
+        const name = nameEl.value.trim(); const targetVal = parseFloat(targetEl.value);
+        if(!name || isNaN(targetVal) || targetVal <= 0) return alert("Verify target parameters allocation metrics.");
+        
+        localEngine.savingsGoals.push({ id: Date.now(), name, target: targetVal });
+        nameEl.value = ''; targetEl.value = ''; commitDatabase(); renderSavingsGoalsTrackers();
+    }
+
+    function renderSavingsGoalsTrackers() {
+        const hook = document.getElementById('savings-goals-progress-hook'); hook.innerHTML = '';
+        if(!localEngine.savingsGoals || localEngine.savingsGoals.length === 0) { hook.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:6px;">No goals initialized. Allocate targets above.</div>'; return; }
+        
+        // AGGREGATE ENTIRE CUMULATIVE LIFE-LOG SAVINGS REALIZED
+        let totalHistoricalSavingsRealized = 0;
+        Object.keys(localEngine.months).forEach(k => {
+            let inc = localEngine.months[k].income || 0; let out = 0;
+            if(localEngine.months[k].expenses) { localEngine.months[k].expenses.forEach(e => out += e.cost); }
+            totalHistoricalSavingsRealized += (inc - out);
+        });
+        if (totalHistoricalSavingsRealized < 0) totalHistoricalSavingsRealized = 0;
+
+        let trackingPoolRemaining = totalHistoricalSavingsRealized;
+
+        localEngine.savingsGoals.forEach((g, idx) => {
+            const dynamicAllocatedGoalFunding = Math.min(trackingPoolRemaining, g.target);
+            trackingPoolRemaining -= dynamicAllocatedGoalFunding;
+            const completionPercentage = Math.min((dynamicAllocatedGoalFunding / g.target) * 100, 100);
+
+            let box = document.createElement('div'); box.className = 'budget-progress-item'; box.style.marginBottom = '12px';
+            box.innerHTML = `
+                <div class="progress-meta">
+                    <span style="font-weight:700; font-size:13px;">🎯 ${g.name}</span>
+                    <span style="font-size:12px; font-weight:700;" class="c-savings">${dynamicAllocatedGoalFunding.toFixed(0)} / ${g.target.toFixed(0)} RM (${completionPercentage.toFixed(0)}%)</span>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${completionPercentage}%; background-color:var(--color-savings);"></div></div>
+                    <button class="btn-trash" style="padding:0 4px; font-size:12px;" onclick="purgeSavingsGoalMetric(${idx})">✕</button>
+                </div>
+            `;
+            hook.appendChild(box);
+        });
+    }
+
+    function purgeSavingsGoalMetric(idx) { if(confirm("Erase this milestone target tracker line parameter?")) { localEngine.savingsGoals.splice(idx, 1); commitDatabase(); renderSavingsGoalsTrackers(); } }
+
     function commitDebtRegistry() {
         const label = document.getElementById('debt-reg-name').value.trim(); const principal = parseFloat(document.getElementById('debt-reg-total').value); const targetInst = parseFloat(document.getElementById('debt-reg-installment').value) || 0; const connect = document.getElementById('debt-connect-budget').checked; const idx = parseInt(document.getElementById('debt-editing-index').value);
-        if (!label || isNaN(principal) || principal <= 0) return alert("Verify liability field constraints validation profiles.");
+        if (!label || isNaN(principal) || principal <= 0) return alert("Verify field limits validation parameters.");
         if (idx >= 0) {
             let oldName = localEngine.debts[idx].name; localEngine.debts[idx] = { name: label, total: principal, paid: localEngine.debts[idx].paid, targetInstallment: targetInst, connectToBudget: connect };
             if (oldName.toLowerCase() !== label.toLowerCase()) { Object.keys(localEngine.months).forEach(mKey => { localEngine.months[mKey].budgets.forEach(b => { if (b.name.toLowerCase() === oldName.toLowerCase()) b.name = label; }); localEngine.months[mKey].expenses.forEach(e => { if (e.item.toLowerCase() === oldName.toLowerCase()) e.item = label; }); }); }
@@ -1404,7 +1366,7 @@
 
     function renderDebtTrackerLedger() {
         recalculateDebtPaymentsFromLogFeeds(); const listHook = document.getElementById('debt-list-hook'); listHook.innerHTML = ''; let sum = 0; let db = localEngine.debts || [];
-        if(db.length === 0) { listHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No outstanding liabilities recorded.</div>'; document.getElementById('debt-aggregate-summary').textContent = '0.00 RM'; return; }
+        if(db.length === 0) { listHook.innerHTML = '<div style="text-align:center; font-size:13px; padding:10px; color:var(--text-muted);">No recorded liabilities.</div>'; document.getElementById('debt-aggregate-summary').textContent = '0.00 RM'; return; }
         db.forEach((d, index) => {
             let owed = d.total - d.paid; sum += owed; let row = document.createElement('div'); row.className = 'ledger-row';
             row.innerHTML = `<div class="ledger-main"><span class="ledger-title">${d.name} <small style="color:var(--text-muted); font-weight:normal;">${d.connectToBudget !== false ? '(Linked)' : '(Isolated)'}</small></span><span class="ledger-subtitle">Paid: ${d.paid.toFixed(2)} / ${d.total.toFixed(2)} RM</span></div><div class="ledger-right"><span class="ledger-value alert-text-color">${owed.toLocaleString('en-US', {minimumFractionDigits: 2})} RM</span><button class="btn-inline-pay" onclick="triggerInlineRepaymentSheet(${index})">Pay</button><button class="btn-inline-edit" onclick="loadDebtEditPreset(${index})">Edit</button><button class="btn-trash" onclick="purgeDebtProfileLine(${index})">✕</button></div>`;
@@ -1416,12 +1378,12 @@
     function triggerInlineRepaymentSheet(index) { document.getElementById('repay-target-index').value = index; toggleModal('debt-repay-modal', true); }
     function submitDebtRepayment() {
         const idx = parseInt(document.getElementById('repay-target-index').value); const val = parseFloat(document.getElementById('repay-amount-field').value);
-        if(isNaN(val) || val <= 0) return alert("Verify core variable boundaries constraint parameter limits.");
+        if(isNaN(val) || val <= 0) return alert("Verify target constraints execution parameters.");
         let d = localEngine.debts[idx]; localEngine.months[currentMonthKey].expenses.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], item: d.name, group: "Needs", cost: val });
         commitDatabase(); renderDebtTrackerLedger(); toggleModal('debt-repay-modal', false); document.getElementById('repay-amount-field').value = '';
     }
 
-    function purgeDebtProfileLine(index) { if (confirm("Erase liability parameters from tracking files completely?")) { localEngine.debts.splice(index, 1); commitDatabase(); renderDebtTrackerLedger(); } }
+    function purgeDebtProfileLine(index) { if (confirm("Erase liability profiles line records?")) { localEngine.debts.splice(index, 1); commitDatabase(); renderDebtTrackerLedger(); } }
 </script>
 
 </body>
