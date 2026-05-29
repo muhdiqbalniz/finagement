@@ -5,41 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finagement Pro</title>
     <style>
-        /* --- AI Integration Styles --- */
-.ai-insight-box {
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(52, 199, 89, 0.05) 100%);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.ai-insight-header {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--color-needs);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.ai-insight-content {
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--text-main);
-}
-.ai-loading {
-    font-style: italic;
-    color: var(--text-muted);
-}
-.magic-log-container {
-    background: rgba(0,0,0,0.02);
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px dashed var(--color-needs);
-    margin-bottom: 16px;
-}
         :root {
             --bg-primary: #F2F4F7;
             --bg-card: #FFFFFF;
@@ -419,18 +384,7 @@
                     <span class="text-muted">Total Spent: <span id="lbl-spent-base">0</span> RM</span>
                 </div>
             </div>
-<div class="card" id="ai-insight-card">
-    <div class="card-title" style="display: flex; justify-content: space-between;">
-        <span>🔮 Smart Insights</span>
-        <button class="btn-minor" onclick="generateAIInsights()">Refresh</button>
-    </div>
-    <div class="ai-insight-box">
-        <div class="ai-insight-header">✨ AI Cash Flow Analysis</div>
-        <div id="ai-insight-text" class="ai-insight-content text-muted">
-            Click refresh to analyze your recent spending patterns...
-        </div>
-    </div>
-</div>
+
             <button class="btn btn-action" onclick="toggleModal('expense-modal', true)">📝 Add New Transaction</button>
 
             <div id="alert-warning-card" class="card card-alert-header" style="display: none; margin-top: 16px;">
@@ -731,18 +685,6 @@
             <h3>Log Transaction Expenditure</h3>
             <span class="close-trigger" onclick="toggleModal('expense-modal', false)">&times;</span>
         </div>
-        
-        <div class="magic-log-container">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: var(--color-needs); margin-bottom: 8px;">✨ Magic AI Log</label>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="ai-magic-input" placeholder="e.g., Spent 45 RM on groceries yesterday..." style="flex: 1; padding: 10px; font-size: 13px;">
-                <button id="btn-magic-log" class="btn btn-action" style="width: auto; padding: 10px 16px;" onclick="processConversationalLog()">Parse</button>
-            </div>
-            <div id="ai-magic-feedback" style="font-size: 11px; color: var(--color-alert); margin-top: 6px; display: none;"></div>
-        </div>
-
-        <div style="text-align: center; font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">— OR MANUAL ENTRY —</div>
-
         <div class="input-group"><label>Transaction Date</label><input type="date" id="log-date-field"></div>
         <div class="input-group"><label>Target Budget Category Allocation</label><select id="log-preset-selector"></select></div>
         <div class="input-group"><label>Amount Paid / Transferred (RM)</label><input type="number" id="log-amount-field" placeholder="0.00" step="0.01"></div>
@@ -1405,117 +1347,6 @@
     }
 
     function purgeDebtProfileLine(index) { if (confirm("Erase liability profiles line records?")) { localEngine.debts.splice(index, 1); commitDatabase(); renderDebtTrackerLedger(); } }
-    // ==========================================
-// AI INTEGRATION MODULE
-// ==========================================
-
-// Helper function to call your Vercel endpoint
-async function fetchAIResponse(userPrompt, systemInstruction) {
-    try {
-        // Points to your Vercel api/chat.js endpoint
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                prompt: userPrompt,
-                system: systemInstruction
-            })
-        });
-        
-        if (!response.ok) throw new Error('AI request failed');
-        const data = await response.json();
-        return data.reply; // Assuming your Vercel function returns { reply: "..." }
-    } catch (error) {
-        console.error("AI API Error:", error);
-        return null;
-    }
-}
-
-// 1. Predictive Cash Flow Insights
-async function generateAIInsights() {
-    const outputEl = document.getElementById('ai-insight-text');
-    outputEl.innerHTML = '<span class="ai-loading">Analyzing your ledger data...</span>';
-    
-    // Gather current month data
-    const state = localEngine.months[currentMonthKey];
-    if (!state || !state.expenses || state.expenses.length === 0) {
-        outputEl.innerHTML = "Not enough transaction data this month to generate meaningful insights.";
-        return;
-    }
-
-    // Prepare data for the AI (limit to keep payload small)
-    const expenseData = state.expenses.map(e => `${e.date}: ${e.cost} RM on ${e.item} (${e.group})`).join('\n');
-    
-    const systemPrompt = "You are a financial advisor AI for an app called Finagement. Analyze the user's monthly spending data. Provide ONE short, actionable, and encouraging insight (max 3 sentences). Mention specific categories or patterns if you see them.";
-    const userPrompt = `Here is my spending for this month:\n${expenseData}\n\nIncome: ${state.income} RM. Provide my insight.`;
-
-    const aiReply = await fetchAIResponse(userPrompt, systemPrompt);
-    
-    if (aiReply) {
-        outputEl.innerHTML = aiReply;
-    } else {
-        outputEl.innerHTML = "<span class='alert-text-color'>Failed to connect to the Insight Engine.</span>";
-    }
-}
-
-// 2. Conversational Transaction Logging
-async function processConversationalLog() {
-    const inputEl = document.getElementById('ai-magic-input');
-    const btn = document.getElementById('btn-magic-log');
-    const feedbackEl = document.getElementById('ai-magic-feedback');
-    const rawText = inputEl.value.trim();
-
-    if (!rawText) return;
-
-    btn.disabled = true;
-    btn.textContent = "⚙️...";
-    feedbackEl.style.display = "none";
-
-    // Grab available categories to help the AI map it correctly
-    const availableCategories = localEngine.months[currentMonthKey].budgets.map(b => b.name).join(", ");
-    const today = new Date().toISOString().split('T')[0];
-
-    const systemPrompt = `You are a data extraction assistant. The user will input a natural language sentence about an expense. 
-    Extract the cost, date (today is ${today}), and map it to the closest category from this list: [${availableCategories}]. 
-    Respond ONLY with a valid JSON object in this format: {"cost": number, "item": "Category Name", "date": "YYYY-MM-DD"}. Do not include markdown formatting.`;
-
-    const aiReply = await fetchAIResponse(rawText, systemPrompt);
-
-    try {
-        // Clean potential markdown from the response
-        const cleanJson = aiReply.replace(/```json/g, '').replace(/```/g, '').trim();
-        const extracted = JSON.parse(cleanJson);
-
-        if (extracted.cost && extracted.item && extracted.date) {
-            // Populate the manual fields so the user can verify them
-            document.getElementById('log-date-field').value = extracted.date;
-            document.getElementById('log-amount-field').value = extracted.cost;
-            
-            // Try to select the correct preset
-            const selector = document.getElementById('log-preset-selector');
-            for(let i=0; i < selector.options.length; i++) {
-                if(selector.options[i].value === extracted.item) {
-                    selector.selectedIndex = i;
-                    break;
-                }
-            }
-            
-            inputEl.value = "";
-            feedbackEl.style.display = "block";
-            feedbackEl.style.color = "var(--color-savings)";
-            feedbackEl.textContent = "Data extracted successfully! Review and click Save below.";
-        } else {
-            throw new Error("Missing fields in JSON");
-        }
-    } catch (e) {
-        feedbackEl.style.display = "block";
-        feedbackEl.style.color = "var(--color-alert)";
-        feedbackEl.textContent = "Couldn't parse that. Try being more specific, or use the manual entry.";
-    } finally {
-        btn.disabled = false;
-        btn.textContent = "Parse";
-    }
-}
 </script>
 
 </body>
