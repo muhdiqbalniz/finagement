@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finagement Pro</title>
+    <title>Finagement Pro + AI</title>
     <style>
         :root {
             --bg-primary: #F2F4F7;
@@ -14,6 +14,7 @@
             --color-wants: #FF9500;
             --color-savings: #34C759;
             --color-alert: #FF3B30;
+            --color-ai: #8E44AD;
             --border-radius: 16px;
             --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --border-color: #E5E9F0;
@@ -214,6 +215,7 @@
         .btn { width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 12px; border: none; cursor: pointer; box-sizing: border-box; }
         .btn-primary { background-color: var(--color-needs); color: white; }
         .btn-action { background-color: var(--color-savings); color: white; }
+        .btn-ai { background: linear-gradient(135deg, #8E44AD, #9B59B6); color: white; }
         .btn-minor { background: transparent; border: 1px solid var(--color-needs); color: var(--color-needs); padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 20px; cursor: pointer; }
 
         .ledger-filter-select { padding: 6px 12px; font-size: 13px; font-weight: 600; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); width: auto; color: var(--text-main); }
@@ -264,6 +266,14 @@
         .c-wants { color: var(--color-wants); }
         .c-savings { color: var(--color-savings); }
         .u-bold { font-weight: 700; }
+
+        /* AI Custom Component Styles */
+        .ai-insight-panel { background: rgba(142, 68, 173, 0.06); border: 1px dashed var(--color-ai); color: var(--text-main); border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.5; }
+        .ai-input-bar-container { display: flex; gap: 8px; margin-bottom: 16px; }
+        .ai-input-bar-container input { flex: 1; border: 1px solid var(--color-ai); border-radius: 12px; padding: 12px; background: var(--input-bg); color: var(--text-main); font-size: 14px; outline: none; }
+        .ai-input-bar-container input:focus { box-shadow: 0 0 0 2px rgba(142,68,173,0.2); }
+        .ai-loading-spinner { font-size: 12px; color: var(--color-ai); font-weight: 700; animation: pulse 1.5s infinite; display: none; margin-bottom: 12px; text-align: center; }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
     </style>
 </head>
 <body>
@@ -308,7 +318,7 @@
 
 <div id="app-wrapper">
     <header>
-        <h1>Finagement</h1>
+        <h1>Finagement Pro</h1>
         <div class="header-actions">
             <div class="month-selector-wrapper">
                 <button class="btn-minor" style="padding: 4px 10px; font-size: 11px;" onclick="triggerCloudSync()">☁️ Sync</button>
@@ -343,6 +353,19 @@
         </div>
 
         <div id="page-overview" class="app-view active">
+            <div class="ai-input-bar-container">
+                <input type="text" id="ai-natural-input-field" placeholder="✨ Say 'Spent 35 RM on lunch just now'...">
+                <button class="btn btn-ai" style="width: auto; padding: 0 16px; border-radius: 12px;" onclick="executeConversationalAILog()">Log Item</button>
+            </div>
+            <div id="ai-processing-notice" class="ai-loading-spinner">🔮 Gemini AI parsing natural transaction string...</div>
+
+            <div id="ai-predictive-insight-card" class="ai-insight-panel" style="display: none;">
+                <div style="font-weight: 800; color: var(--color-ai); margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                    <span>🔮 Gemini Intelligence Forecast Matrix</span>
+                </div>
+                <div id="ai-insight-text-content">Analyzing predictive financial vectors across parameters...</div>
+            </div>
+
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
                     Overview Guide
@@ -385,7 +408,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-action" onclick="toggleModal('expense-modal', true)">📝 Add New Transaction</button>
+            <button class="btn btn-action" onclick="toggleModal('expense-modal', true)">📝 Add New Transaction Manually</button>
 
             <div id="alert-warning-card" class="card card-alert-header" style="display: none; margin-top: 16px;">
                 <div class="card-title" id="alert-box-main-title">⚠️ Alerts &amp; Threshold Reminders</div>
@@ -482,6 +505,15 @@
         </div>
 
         <div id="page-expenses" class="app-view">
+            <div class="card" style="border-top: 4px solid var(--color-ai);">
+                <div class="card-title">🧠 AI Spreadsheet Column Schema Mapper</div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top:-8px; margin-bottom:12px;">Paste a few sample rows of raw CSV or tabular JSON data from an outside tracker below, and Gemini will automatically normalize its values directly into your budgets template.</p>
+                <div class="input-group">
+                    <textarea id="ai-csv-import-box" style="width:100%; height:80px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main); border-radius:10px; padding:10px; font-family:monospace; font-size:12px; box-sizing:border-box; outline:none;" placeholder="Date,Description,Amount&#10;2026-05-12,Groceries Store,145.50&#10;2026-05-14,Streaming Sub,49.00"></textarea>
+                </div>
+                <button class="btn btn-ai" style="padding:10px;" onclick="executeAISheetStructureMap()">Analyze and Map Spreadsheet Schema</button>
+            </div>
+
             <div class="card" style="padding-bottom:12px;">
                 <div class="card-title">
                     Expenses Guide
@@ -717,12 +749,19 @@
 </div>
 
 <div id="profile-modal" class="modal">
-    <div class="modal-content" style="border-radius: 20px; max-width: 320px; margin: auto; margin-bottom: auto; top: 15%;">
+    <div class="modal-content" style="border-radius: 20px; max-width: 320px; margin: auto; margin-bottom: auto; top: 10%;">
         <div class="modal-header">
             <h3>Account Settings</h3>
             <span class="close-trigger" onclick="toggleModal('profile-modal', false)">&times;</span>
         </div>
-        <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600;">Active Account Session: <span id="profile-username-lbl" style="color:var(--color-needs)">-</span></p>
+        <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600;">Active Account Session: <span id="profile-username-lbl" style="color:var(--color-needs)">-</span></p>
+        
+        <div class="input-group" style="text-align: left; margin-bottom: 14px;">
+            <label style="color:var(--color-ai); font-weight:700;">🔑 Gemini AI API Developer Key</label>
+            <input type="password" id="cfg-ai-token-key" placeholder="AIzaSy..." oninput="persistAITokenConfig()">
+            <small style="color:var(--text-muted); font-size:11px; display:block; margin-top:4px;">Stored locally on this browser engine session profile.</small>
+        </div>
+
         <button class="btn" style="background: var(--bg-primary); color: var(--text-main); margin-bottom: 12px; border: 1px solid var(--border-color);" onclick="executeThemeSwitchToggle()">🌗 Toggle UI Theme</button>
         <button class="btn" style="background: var(--color-alert); color: white;" onclick="executeApplicationLogout()">🚪 Log Out Session</button>
     </div>
@@ -738,7 +777,7 @@
     const monthsArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let currentMonthKey = `${monthsArray[activeMonthNum - 1]} ${activeYear}`;
 
-    let localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
+    let localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false, aiToken: "" };
     let currentRatioInputMode = "slider";
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -752,11 +791,157 @@
             if (!localEngine.debts) localEngine.debts = [];
             
             document.getElementById('profile-username-lbl').textContent = activeUserCreds.username;
+            document.getElementById('cfg-ai-token-key').value = localEngine.aiToken || "";
             document.getElementById('login-screen').style.display = "none";
             document.getElementById('app-wrapper').style.display = "block";
             bootStateEngine();
         }
     });
+
+    function persistAITokenConfig() {
+        localEngine.aiToken = document.getElementById('cfg-ai-token-key').value.trim();
+        sessionStorage.setItem('finagement_engine', JSON.stringify(localEngine));
+    }
+
+    // UTILITY ENGINE: ASYNC NATIVE INTEGRATION CONNECTING TO GEMINI PRO ARCHITECTURES
+    async function queryGeminiProEngine(systemInstruction, userContent) {
+        if(!localEngine.aiToken) {
+            alert("⚠️ Please add your Gemini API Key in the Settings Profile panel (👤 icon top right) to unlock this feature.");
+            return null;
+        }
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${localEngine.aiToken}`;
+        try {
+            const bodyPayload = {
+                contents: [{ parts: [{ text: userContent }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
+            };
+            const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bodyPayload) });
+            if (!response.ok) throw new Error("API Execution Interrupted.");
+            const parsedData = await response.json();
+            return JSON.parse(parsedData.candidates[0].content.parts[0].text);
+        } catch (error) {
+            console.error(error);
+            alert("❌ AI Generation Layer Connection Error. Confirm API key accuracy.");
+            return null;
+        }
+    }
+
+    // FEATURE 1: AI CONVERSATIONAL QUICK TRANSACTION LOG ENGINE
+    async function executeConversationalAILog() {
+        const textInput = document.getElementById('ai-natural-input-field').value.trim();
+        if(!textInput) return;
+
+        const noticeEl = document.getElementById('ai-processing-notice');
+        noticeEl.style.display = "block";
+
+        const state = localEngine.months[currentMonthKey];
+        const categoryMap = state.budgets.map(b => ({ name: b.name, group: b.group }));
+
+        const systemPrompt = `You are a professional transaction accounting system extraction parser inside a financial app. Analyze user plain-text natural text variables and construct data metrics matching our structural requirements.
+        Available App Categories to dynamically match with: ${JSON.stringify(categoryMap)}.
+        Current Target ISO Date reference framework baseline: ${new Date().toISOString().split('T')[0]}. If text specifies "yesterday", adjust date value accordingly.
+        
+        CRITICAL RULES:
+        1. Always match the "item" key strictly against the closest logical entity in the provided list. If absolutely no matching category found, fallback to the item name mentioned.
+        2. Set the exact matched "group" value string ("Needs", "Wants", or "Savings").
+        3. Parse numerical values explicitly into numbers.
+        
+        Return ONLY valid raw executable JSON object string format structural template:
+        { "cost": 0.00, "item": "StringMatched", "group": "Needs/Wants/Savings", "date": "YYYY-MM-DD" }`;
+
+        const resultJson = await queryGeminiProEngine(systemPrompt, textInput);
+        noticeEl.style.display = "none";
+
+        if(resultJson && resultJson.cost && resultJson.item) {
+            // Confirm item exists inside tracking baseline structures
+            let targetPreset = state.budgets.find(b => b.name.toLowerCase() === resultJson.item.toLowerCase());
+            if(!targetPreset) {
+                targetPreset = { group: resultJson.group || "Wants", name: resultJson.item, cap: resultJson.cost * 1.5, warningPct: 100 };
+                state.budgets.push(targetPreset);
+            }
+
+            state.expenses.push({ id: Date.now(), date: resultJson.date, item: targetPreset.name, group: targetPreset.group, cost: parseFloat(resultJson.cost) });
+            document.getElementById('ai-natural-input-field').value = "";
+            commitDatabase();
+            renderDashboardView();
+            alert(`✨ Auto-Logged to ${targetPreset.name} (${targetPreset.group}): ${resultJson.cost.toFixed(2)} RM`);
+        }
+    }
+
+    // FEATURE 2: PREDICTIVE FORECASTING CONTEXT EXTRACTOR ENGINE
+    async function computeAIPredictiveCashflowForecast() {
+        const insightCard = document.getElementById('ai-predictive-insight-card');
+        const insightTxt = document.getElementById('ai-insight-text-content');
+        
+        if(!localEngine.aiToken) return; // Do not interrupt interface without active configuration
+        
+        // Collate history summaries across past logs metrics
+        let historicalLogSummary = [];
+        Object.keys(localEngine.months).forEach(k => {
+            historicalLogSummary.push({
+                month: k,
+                income: localEngine.months[k].income,
+                totalExpenses: localEngine.months[k].expenses?.reduce((sum, e) => sum + e.cost, 0) || 0,
+                breakdown: localEngine.months[k].expenses || []
+            });
+        });
+
+        if(historicalLogSummary.length === 0) return;
+        insightCard.style.display = "block";
+
+        const systemPrompt = `You are an executive forensic accounting predictive system. Inspect historical application matrices, run cashflow risk computations, and return highly constructive financial advice.
+        Keep the answer short, punchy, and actionable (maximum 3 sentences). Address velocity risks or unallocated structural margins.
+        Return ONLY a JSON map strictly matching: { "insight": "Clear textual instruction string here" }`;
+
+        const currentSnapshot = `Current Tracking Data: ${JSON.stringify(historicalLogSummary)}. Target parameters budget limits: ${JSON.stringify(localEngine.months[currentMonthKey].budgets)}`;
+        
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${localEngine.aiToken}`;
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: currentSnapshot }] }], systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
+                })
+            });
+            if(response.ok) {
+                const parsed = await response.json();
+                const cleanJson = JSON.parse(parsed.candidates[0].content.parts[0].text);
+                insightTxt.innerHTML = `<strong>💡 AI Insight Forecast:</strong> ${cleanJson.insight}`;
+            }
+        } catch (e) { console.error("Forecast trace connection fault loop skipped.", e); }
+    }
+
+    // FEATURE 3: AI DYNAMIC SPREADSHEET COLUMN SCHEMA STRUCTURAL MAPPER
+    async function executeAISheetStructureMap() {
+        const rawContent = document.getElementById('ai-csv-import-box').value.trim();
+        if(!rawContent) return alert("Please paste row values in the textbox target grid.");
+
+        const systemPrompt = `You are an ETL migration parser engine. Analyze unstructured CSV data, tab-delimited streams, or arbitrary layout properties. Identify variables containing transaction costs, calendar parameters, and entity descriptions.
+        Map them into structural array models.
+        Return ONLY valid JSON structure matrix format:
+        { "mappedExpenses": [ { "date": "YYYY-MM-DD", "item": "LabelName", "cost": 0.00, "group": "Needs/Wants/Savings" } ] }`;
+
+        alert("🧠 Gemini parsing file parameters mapping arrays...");
+        const resultJson = await queryGeminiProEngine(systemPrompt, rawContent);
+        
+        if(resultJson && resultJson.mappedExpenses) {
+            const state = localEngine.months[currentMonthKey];
+            let count = 0;
+            resultJson.mappedExpenses.forEach(e => {
+                let exists = state.budgets.some(b => b.name.toLowerCase() === e.item.toLowerCase());
+                if(!exists) { state.budgets.push({ group: e.group || "Wants", name: e.item, cap: e.cost * 1.5, warningPct: 100 }); }
+                state.expenses.push({ id: Date.now() + count, date: e.date || new Date().toISOString().split('T')[0], item: e.item, group: e.group || "Wants", cost: parseFloat(e.cost) });
+                count++;
+            });
+            commitDatabase();
+            renderExpenseDetailsTable();
+            renderDashboardView();
+            document.getElementById('ai-csv-import-box').value = "";
+            alert(`🎉 Success! Parsed and mapped ${count} items cleanly directly into current active accounting ledger registers.`);
+        }
+    }
 
     function toggleGuideBlock(guideId) {
         const target = document.getElementById(guideId);
@@ -783,7 +968,7 @@
         }
 
         signupBtn.disabled = true; signupBtn.textContent = "Creating profile..."; errElement.style.display = "none";
-        const baseFreshPayload = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
+        const baseFreshPayload = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false, aiToken: "" };
 
         try {
             const response = await fetch(CLOUD_API_URL, {
@@ -817,7 +1002,7 @@
                 activeUserCreds.username = userField; activeUserCreds.password = passField;
                 document.getElementById('profile-username-lbl').textContent = userField;
 
-                localEngine = (result.data && result.data.trim() !== "") ? JSON.parse(result.data) : { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
+                localEngine = (result.data && result.data.trim() !== "") ? JSON.parse(result.data) : { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false, aiToken: "" };
                 if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
                 if (!localEngine.debts) localEngine.debts = [];
 
@@ -826,6 +1011,7 @@
 
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('app-wrapper').style.display = "block";
+                document.getElementById('cfg-ai-token-key').value = localEngine.aiToken || "";
                 bootStateEngine();
             } else { showLoginError(result.message || "Invalid account matching profiles."); }
         } catch (err) { showLoginError("Cloud linkage execution failure loop."); } 
@@ -835,7 +1021,7 @@
     function showLoginError(msg) { const el = document.getElementById('login-error'); el.textContent = msg; el.style.display = "block"; }
 
     function executeApplicationLogout() {
-        activeUserCreds = { username: "", password: "" }; localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false };
+        activeUserCreds = { username: "", password: "" }; localEngine = { months: {}, debts: [], savingsGoals: [], hasSeenTutorial: false, aiToken: "" };
         sessionStorage.removeItem('finagement_creds'); sessionStorage.removeItem('finagement_engine');
         toggleModal('profile-modal', false); document.getElementById('app-wrapper').style.display = "none"; document.getElementById('login-screen').style.display = "flex";
     }
@@ -996,7 +1182,6 @@
         currentBudgets.forEach(b => { let opt = document.createElement('option'); opt.value = b.name; opt.textContent = `[${b.group}] - ${b.name}`; selector.appendChild(opt); });
     }
 
-    // UPDATED: CORE ENGINE MATHEMATICS FIXES FOR INJECTED BASE BALANCES
     function recalculateCrossPageLedgerContributions() {
         if(localEngine.debts) localEngine.debts.forEach(d => d.paid = 0);
         if(!localEngine.savingsGoals) localEngine.savingsGoals = [];
@@ -1087,6 +1272,9 @@
                 logsHook.appendChild(logRow);
             });
         }
+
+        // Fire Predictive Analysis Forecasts asynchronously
+        computeAIPredictiveCashflowForecast();
     }
 
     function submitDailyExpenseEntry() {
@@ -1247,7 +1435,6 @@
         hook.appendChild(inner);
     }
 
-    // FIXED: IMPLEMENTED BASE VALUE LOGICS SO REGISTRATIONS APPEAR IMMEDIATELY
     function commitSavingsRegistry() {
         const label = document.getElementById('save-reg-name').value.trim(); 
         const targetCap = parseFloat(document.getElementById('save-reg-total').value); 
@@ -1257,7 +1444,6 @@
         const idx = parseInt(document.getElementById('savings-editing-index').value);
         
         if (!label || isNaN(targetCap) || targetCap <= 0) return alert("Verify field limits validation parameters.");
-        
         if (!localEngine.savingsGoals) localEngine.savingsGoals = [];
 
         if (idx >= 0) {
@@ -1304,7 +1490,6 @@
 
     function purgeSavingsProfileLine(index) { if (confirm("Erase this savings milestone record?")) { localEngine.savingsGoals.splice(index, 1); commitDatabase(); renderSavingsTrackerLedger(); } }
 
-    // DEBT LAYER PROFILE METHODS
     function commitDebtRegistry() {
         const label = document.getElementById('debt-reg-name').value.trim(); const principal = parseFloat(document.getElementById('debt-reg-total').value); const targetInst = parseFloat(document.getElementById('debt-reg-installment').value) || 0; const connect = document.getElementById('debt-connect-budget').checked; const idx = parseInt(document.getElementById('debt-editing-index').value);
         if (!label || isNaN(principal) || principal <= 0) return alert("Verify field limits validation parameters.");
